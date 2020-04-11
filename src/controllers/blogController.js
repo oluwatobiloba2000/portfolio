@@ -36,7 +36,30 @@ class Controller{
         }
     }
 
-  
+    static async updateBlog(req, res){
+        const id = req.params.id;
+
+        try{
+            const query = `SELECT * FROM blog WHERE id=$1`
+            const value = [id];
+            const formerBlog = await pool.query(query, value);
+            if(!formerBlog.rows.length) return jsonFormatter.error(res, 'blog not found', 404)
+            const formerBlogToUpdate = formerBlog.rows[0];
+            const title = req.body.title || formerBlogToUpdate.title;
+            const category = req.body.category  ||  formerBlogToUpdate.category;
+            const picture = req.body.picture || formerBlogToUpdate.picture;
+            const date = req.body.date || formerBlogToUpdate.date;
+            const time = req.body.time || formerBlogToUpdate.time;
+            const story = req.body.story || formerBlogToUpdate.story;
+            const updated = req.body.updated || formerBlogToUpdate.updated;
+            const updatequery = `UPDATE blog SET title=$1, category=$2, picture=$3, date=$4, time=$5, story=$6, updated=$7 WHERE id=$8 RETURNING *`
+            const updateValues = [title, category, picture, date, time, story, updated, id];
+            const newBlog = await pool.query(updatequery, updateValues);
+            return jsonFormatter.success(res, 'blog updated', newBlog.rowCount, newBlog.rows);
+        }catch(e){
+            console.error(e)
+        }
+    }
 }
 
 export default Controller;
