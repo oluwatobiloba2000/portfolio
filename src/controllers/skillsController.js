@@ -22,7 +22,18 @@ class Controller{
         }
     }
 
-
+    static async getSkills (req, res){
+        try{
+            const query = `SELECT * FROM skills`
+            const skills = await pool.query(query);
+            if(!skills.rows.length) return jsonFormatter.success(res, 'empty');
+            return jsonFormatter.success(res, 'All Skills', skills.rowCount, skills.rows)
+        }catch(e){
+            console.error(e);
+        }
+    }
+   
+    
 }
 
 export default Controller;
