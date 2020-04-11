@@ -33,8 +33,30 @@ class Controller{
             console.error(e);
         }
     }
- 
-    
+
+    static async updateProject (req, res){
+        const id = req.params.id;
+
+        try{
+            const query = `SELECT * FROM project WHERE id=$1`
+            const value = [id];
+            const formerProject = await pool.query(query, value);
+            if(!formerProject.rows.length) return jsonFormatter.error(res, 'project not found', 404)
+            const formerProjectToUpdate = formerProject.rows[0];
+            const picture = req.body.picture || formerProjectToUpdate.picture;
+            const hostedLink = req.body.hostedLink || formerProjectToUpdate.hostedLink;
+            const githubLink = req.body.githubLink || formerProjectToUpdate.githubLink;
+            const moreDetails = req.body.moreDetails || formerProjectToUpdate.moreDetails;
+            const updatequery = `UPDATE project SET picture=$1, hostedLink=$2, githubLink=$3 , moreDetails=$4 WHERE id=$5 RETURNING *`
+            const updateValues = [picture, hostedLink, githubLink, moreDetails, id];
+            const newProject = await pool.query(updatequery, updateValues);
+            return jsonFormatter.success(res, 'skill updated', newProject.rowCount, newProject.rows);
+        }catch(e){
+            console.error(e)
+        }
+    }
+
+
 }
 
 export default Controller;
