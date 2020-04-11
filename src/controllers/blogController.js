@@ -25,6 +25,18 @@ class Controller{
         }
     }
 
+    static async GetBlog (req, res){
+        try {
+            const query = `SELECT * from blog`
+            const blog = await pool.query(query);
+            if(!blog.rows.length) return jsonFormatter.success(res, 'empty');
+            return jsonFormatter.success(res, 'your profile', blog.rowCount, blog.rows);
+        }catch(error){
+            console.log(error)
+        }
+    }
+
+  
 }
 
 export default Controller;
