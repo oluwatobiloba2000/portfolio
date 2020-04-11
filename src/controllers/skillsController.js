@@ -53,7 +53,19 @@ class Controller{
         }
     }
 
- 
+    static async deleteSkill (req, res){
+        const id = req.params.id;
+
+        try{
+            const query = `DELETE FROM skills WHERE id=$1`
+            const value = [id];
+            const skill = await pool.query(query, value);
+            if(!skill.rowCount) return jsonFormatter.error(res, 'skills not found', 404)
+            return jsonFormatter.success(res, 'skill deleted');
+        }catch(e){
+            console.error(e)
+        }
+    }
 }
 
 export default Controller;
