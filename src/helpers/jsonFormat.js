@@ -1,16 +1,19 @@
 const jsonFormatter = {
-    error(res, status, code, data){
+    error(res, description, code, data){
         res.status(code);
         res.json({
-            status,
+            status : "error",
+            description,
             data
         })
     },
 
-    success(res, status, code, data){
-        res.status(code);
+    success(res, description, rowCount, data){
+        res.status(200);
         res.json({
-            status,
+            status : "success",
+            description,
+            rowCount,
             data
         })
     }
