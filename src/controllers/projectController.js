@@ -33,7 +33,7 @@ class Controller{
             console.error(e);
         }
     }
-
+    
     static async updateProject (req, res){
         const id = req.params.id;
 
@@ -56,7 +56,19 @@ class Controller{
         }
     }
 
+    static async deleteProject (req, res){
+        const id = req.params.id;
 
+        try{
+            const query = `DELETE FROM project WHERE id=$1`
+            const value = [id];
+            const project = await pool.query(query, value);
+            if(!project.rowCount) return jsonFormatter.error(res, 'project not found', 404)
+            return jsonFormatter.success(res, 'project deleted');
+        }catch(e){
+            console.error(e)
+        }
+    }
 }
 
 export default Controller;
