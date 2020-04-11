@@ -32,8 +32,28 @@ class Controller{
             console.error(e);
         }
     }
-   
-    
+    static async updateSkills (req, res){
+        const id = req.params.id;
+
+        try{
+            const query = `SELECT * FROM skills WHERE id=$1`
+            const value = [id];
+            const formerSkills = await pool.query(query, value);
+            if(!formerSkills.rows.length) return jsonFormatter.error(res, 'skills not found', 404)
+            const formerSkillsToUpdate = formerSkills.rows[0];
+            const name = req.body.name || formerSkillsToUpdate.name;
+            const SkillsPics = req.body.SkillsPics || formerSkillsToUpdate.SkillsPics;
+            const skillLinkWebsite = req.body.skillLinkWebsite || formerSkillsToUpdate.skillLinkWebsite;
+            const updatequery = `UPDATE skills SET name=$1, skillsPics=$2, skillLinkWebsite=$3 WHERE id=$4 RETURNING *`
+            const updateValues = [name, SkillsPics, skillLinkWebsite, id];
+            const newSkills = await pool.query(updatequery, updateValues);
+            return jsonFormatter.success(res, 'skill updated', newSkills.rowCount, newSkills.rows);
+        }catch(e){
+            console.error(e)
+        }
+    }
+
+ 
 }
 
 export default Controller;
