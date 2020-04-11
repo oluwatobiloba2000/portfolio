@@ -30,6 +30,18 @@ class Controller{
         }
     }
 
+    static async Getprofile (req, res){
+        try {
+            const query = `SELECT * from profile`
+            const profile = await pool.query(query);
+            if(!profile.rows.length) return jsonFormatter.success(res, 'empty');
+            return jsonFormatter.success(res, 'your profile', profile.rowCount, profile.rows);
+        }catch(error){
+            console.log(error)
+        }
+    }
+
+
 }
 
 export default Controller;
