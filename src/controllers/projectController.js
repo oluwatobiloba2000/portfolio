@@ -23,7 +23,18 @@ class Controller{
         }
     }
 
-
+    static async getProjects (req, res){
+        try{
+            const query = `SELECT * FROM project`
+            const project = await pool.query(query);
+            if(!project.rows.length) return jsonFormatter.success(res, 'empty');
+            return jsonFormatter.success(res, 'All projects', project.rowCount, project.rows)
+        }catch(e){
+            console.error(e);
+        }
+    }
+ 
+    
 }
 
 export default Controller;
