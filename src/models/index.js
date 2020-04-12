@@ -30,7 +30,7 @@ const profileTable = async () => {
     phoneNumber VARCHAR,
     cvLink VARCHAR(5000),
     dateLunched VARCHAR(5000),
-    lastLogin VARCHAR,
+    lastLogout VARCHAR,
     id SERIAL PRIMARY KEY UNIQUE)`
     try {
         await pool.query(queryProfile);
@@ -155,8 +155,8 @@ const dropTable = async () => {
       }
 }
 
-// profileTable()
-dropTable()
+profileTable()
+// dropTable()
 socialTable()
 skillsTable()
 blogTable()
