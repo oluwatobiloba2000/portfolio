@@ -16,7 +16,7 @@ class Controller{
             return jsonFormatter.error(res, 'All fields are required !', 400);
         }
         try {
-            const query = `INSERT INTO blog(title, category, picture, date, time, story, timestamp) VALUES($1, $2, $3, $4, $5, $6, CURRENT_DATE) RETURNING *`
+            const query = `INSERT INTO blog(title, category, picture, date, time, story, timestamp) VALUES($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) RETURNING *`
             const value = [title, category, picture, date, time, story]
             const newBlog = await pool.query(query, value);
             return jsonFormatter.success(res, 'blog posted', newBlog.rowCount, newBlog.rows);
@@ -27,10 +27,10 @@ class Controller{
 
     static async GetBlog (req, res){
         try {
-            const query = `SELECT * from blog`
+            const query = `SELECT * from blog ORDER BY TIMESTAMP`
             const blog = await pool.query(query);
             if(!blog.rows.length) return jsonFormatter.success(res, 'empty');
-            return jsonFormatter.success(res, 'your profile', blog.rowCount, blog.rows);
+            return jsonFormatter.success(res, 'All blog', blog.rowCount, blog.rows);
         }catch(error){
             console.log(error)
         }
