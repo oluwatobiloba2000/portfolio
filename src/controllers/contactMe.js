@@ -35,7 +35,22 @@ class Controller{
         }
     }
 
-   
+    //To view read and unread messages
+    static async FilterMessages(req, res){
+        const filterMessage = req.body.filterMessage;
+        if(!filterMessage == 'true' || !filterMessage == 'false') return jsonFormatter.error(res, 'Boolean field needed true or false', 400);
+        try {
+            const query = `SELECT * from contactMe WHERE read=$1`
+            const value = [filterMessage]
+            const messages = await pool.query(query, value);
+            if(!messages.rows.length) return jsonFormatter.success(res, 'empty');
+            return jsonFormatter.success(res,  filterMessage == 'true' ? 'Read messages' : 'Unread messages', messages.rowCount, messages.rows);
+        }catch(error){
+            console.log(error)
+        }
+    }
+    
+    
 }
 
 export default Controller;
