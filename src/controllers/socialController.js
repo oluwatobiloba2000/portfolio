@@ -7,7 +7,7 @@ dotenv.config();
 class Controller{
     static async Getsocial (req, res){
         try {
-            const query = `SELECT * from social`
+            const query = `SELECT * from social ORDER BY TIMESTAMP`
             const social = await pool.query(query);
             if(!social.rows.length) return jsonFormatter.success(res, 'success', 200, social.rowCount, social);
             return jsonFormatter.success(res, 'success', 200, social.rowCount, social.rows);

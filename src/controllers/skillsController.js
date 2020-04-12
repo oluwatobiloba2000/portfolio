@@ -13,7 +13,7 @@ class Controller{
             return jsonFormatter.error(res, 'All fields are required !', 400);
         }
         try {
-            const query = `INSERT INTO skills(name, SkillsPics, skillLinkWebsite, timestamp) VALUES($1, $2, $3, CURRENT_DATE) RETURNING *`
+            const query = `INSERT INTO skills(name, SkillsPics, skillLinkWebsite, timestamp) VALUES($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *`
             const value = [name, SkillsPics, skillLinkWebsite]
             const newSkills = await pool.query(query, value);
             return jsonFormatter.success(res, 'skill posted', newSkills.rowCount, newSkills.rows);
@@ -24,7 +24,7 @@ class Controller{
 
     static async getSkills (req, res){
         try{
-            const query = `SELECT * FROM skills`
+            const query = `SELECT * FROM skills ORDER BY TIMESTAMP`
             const skills = await pool.query(query);
             if(!skills.rows.length) return jsonFormatter.success(res, 'empty');
             return jsonFormatter.success(res, 'All Skills', skills.rowCount, skills.rows)

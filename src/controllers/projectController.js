@@ -14,7 +14,7 @@ class Controller{
             return jsonFormatter.error(res, 'All fields are required !', 400);
         }
         try {
-            const query = `INSERT INTO project(picture, hostedLink, githubLink, moreDetails, timestamp) VALUES($1, $2, $3, $4, CURRENT_DATE) RETURNING *`
+            const query = `INSERT INTO project(picture, hostedLink, githubLink, moreDetails, timestamp) VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *`
             const value = [picture, hostedLink, githubLink, moreDetails]
             const newProject = await pool.query(query, value);
             return jsonFormatter.success(res, 'project posted', newProject.rowCount, newProject.rows);
@@ -25,7 +25,7 @@ class Controller{
 
     static async getProjects (req, res){
         try{
-            const query = `SELECT * FROM project`
+            const query = `SELECT * FROM project ORDER BY TIMESTAMP`
             const project = await pool.query(query);
             if(!project.rows.length) return jsonFormatter.success(res, 'empty');
             return jsonFormatter.success(res, 'All projects', project.rowCount, project.rows)
