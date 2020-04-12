@@ -114,11 +114,11 @@ const contactMeTable = async () => {
                 id SERIAL PRIMARY KEY UNIQUE,
                 name VARCHAR NOT NULL,
                 message VARCHAR NOT NULL,
-                read BOOLEAN DEFAULT false,
+                read VARCHAR DEFAULT 'false',
                 subject VARCHAR NOT NULL,
                 senderEmailAddress VARCHAR NOT NULL,
                 timeReceived VARCHAR NOT NULL,
-                trash BOOLEAN DEFAULT false,
+                trash VARCHAR DEFAULT 'false',
                 timestamp TIMESTAMP )`
     try {
         await pool.query(queryContactMe);
@@ -156,11 +156,11 @@ const dropTable = async () => {
 }
 
 profileTable()
-dropTable()
+// dropTable()
 socialTable()
 skillsTable()
 blogTable()
 projectTable()
-// contactMeTable()
+contactMeTable()
 userTable()
 export default pool;
