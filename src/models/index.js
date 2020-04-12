@@ -114,11 +114,11 @@ const contactMeTable = async () => {
                 id SERIAL PRIMARY KEY UNIQUE,
                 name VARCHAR NOT NULL,
                 message VARCHAR NOT NULL,
-                read VARCHAR NOT NULL,
+                read BOOLEAN DEFAULT false,
                 subject VARCHAR NOT NULL,
                 senderEmailAddress VARCHAR NOT NULL,
                 timeReceived VARCHAR NOT NULL,
-                trash VARCHAR NOT NULL,
+                trash BOOLEAN DEFAULT false,
                 timestamp TIMESTAMP )`
     try {
         await pool.query(queryContactMe);
@@ -147,7 +147,7 @@ const userTable = async () => {
 
 const dropTable = async () => {
     try {
-        const query = "DROP TABLE IF EXISTS profile";
+        const query = "DROP TABLE IF EXISTS contactMe";
         await pool.query(query);
         console.log("Table dropped");
       } catch (e) {
@@ -156,11 +156,11 @@ const dropTable = async () => {
 }
 
 profileTable()
-// dropTable()
+dropTable()
 socialTable()
 skillsTable()
 blogTable()
 projectTable()
-contactMeTable()
+// contactMeTable()
 userTable()
 export default pool;
