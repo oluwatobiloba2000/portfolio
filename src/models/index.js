@@ -118,6 +118,7 @@ const contactMeTable = async () => {
                 subject VARCHAR NOT NULL,
                 senderEmailAddress VARCHAR NOT NULL,
                 timeReceived VARCHAR NOT NULL,
+                star VARCHAR DEFAULT 'false',
                 trash VARCHAR DEFAULT 'false',
                 timestamp TIMESTAMP )`
     try {
