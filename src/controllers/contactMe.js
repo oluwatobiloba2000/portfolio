@@ -84,9 +84,9 @@ class Controller {
             if(!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404)
             const formerMessageToUpdate = formerMessage.rows[0];
             const star = req.body.star || formerMessageToUpdate.star;
-            if (star !== 'star message') jsonFormatter.error(res, 'To star a message type **star message** to the body', 400)
+            if (star !== 'star message') return jsonFormatter.error(res, 'To star a message type **star message** to the body', 400)
             const starMessageRequest = star == 'star message' ? 'true' : 'false';
-            if(starMessageRequest.star == 'true') jsonFormatter.error(res, 'message has been starred', 400)
+            if(formerMessageToUpdate.star == 'true') return jsonFormatter.error(res, 'message has been starred', 400)
             const updatequery = `UPDATE contactMe SET star=$1 WHERE id=$2 RETURNING *`
             const updateValues = [starMessageRequest, id];
             const newStarredMessage = await pool.query(updatequery, updateValues);
