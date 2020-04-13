@@ -17,7 +17,8 @@
     "express-device": "^0.4.2",
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.2",
-    "pg": "^7.14.0"
+    "pg": "^7.14.0",
+    "uuidv4": "^6.0.7"
   },
   "devDependencies": {},
   "scripts": {
