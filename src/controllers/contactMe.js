@@ -95,6 +95,32 @@ class Controller {
             console.error(e)
         }
     }
+
+       // this controller is to star a message
+    //to star a message do this in the body
+    //  {
+    //   "star": "unstar message"
+    //  }
+    static async unstarMessage(req, res){
+        const id = req.params.id;
+        try{
+            const query = `SELECT * FROM contactMe WHERE id=$1`
+            const value = [id];
+            const formerMessage = await pool.query(query, value);
+            if(!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404)
+            const formerMessageToUpdate = formerMessage.rows[0];
+            const star = req.body.star || formerMessageToUpdate.star;
+            if (star !== 'unstar message') return jsonFormatter.error(res, 'To unstar a message type **unstar message** to the body', 400)
+            const starMessageRequest = star == 'unstar message' ? 'false' : 'true';
+            if(formerMessageToUpdate.star == 'false') return jsonFormatter.error(res, 'message has been unstarred', 400)
+            const updatequery = `UPDATE contactMe SET star=$1 WHERE id=$2 RETURNING *`
+            const updateValues = [starMessageRequest, id];
+            const newStarredMessage = await pool.query(updatequery, updateValues);
+            return jsonFormatter.success(res, 'message unstarred', newStarredMessage.rowCount, newStarredMessage.rows);
+        }catch(e){
+            console.error(e)
+        }
+    }
 }
 
 export default Controller;
