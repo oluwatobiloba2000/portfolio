@@ -55,7 +55,21 @@ class Controller {
             return jsonFormatter.error(res, 'field needed are "read messages" or "unread messages"', 400);
         }
     }
-    
+
+    static async deleteMessage(req, res){
+        const id = req.params.id;
+
+        try{
+            const query = `DELETE from contactMe WHERE id=$1`
+            const value = [id];
+            const messageToDelete = await pool.query(query, value);
+            if(!messageToDelete.rowCount) return jsonFormatter.error(res, 'message not found', 404)
+            return jsonFormatter.success(res, 'message deleted');
+        }catch(e){
+            console.error(e)
+        }
+    }
+
 }
 
 export default Controller;
