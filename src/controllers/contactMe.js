@@ -96,7 +96,7 @@ class Controller {
         }
     }
 
-       // this controller is to star a message
+       // this controller is to unstar a message
     //to star a message do this in the body
     //  {
     //   "star": "unstar message"
@@ -121,6 +121,33 @@ class Controller {
             console.error(e)
         }
     }
+
+           // this controller is to trash a message
+    //to trash a message do this in the body
+    //  {
+    //   "trash": "trash message"
+    //  }
+    static async trashMessage(req, res){
+        const id = req.params.id;
+        try{
+            const query = `SELECT * FROM contactMe WHERE id=$1`
+            const value = [id];
+            const formerMessage = await pool.query(query, value);
+            if(!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404)
+            const formerMessageToUpdate = formerMessage.rows[0];
+            const trash = req.body.trash || formerMessageToUpdate.trash;
+            if (trash !== 'trash message') return jsonFormatter.error(res, 'To trash a message type **trash message** to the body', 400)
+            const trashMessageRequest = trash == 'trash message' ? 'true' : 'false';
+            if(formerMessageToUpdate.trash == 'true') return jsonFormatter.error(res, 'message has been trashed permanently', 400)
+            const updatequery = `UPDATE contactMe SET trash=$1 WHERE id=$2 RETURNING *`
+            const updateValues = [trashMessageRequest, id];
+            const newStarredMessage = await pool.query(updatequery, updateValues);
+            return jsonFormatter.success(res, 'message trashed', newStarredMessage.rowCount, newStarredMessage.rows);
+        }catch(e){
+            console.error(e)
+        }
+    }
+    
 }
 
 export default Controller;
