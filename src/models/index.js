@@ -8,7 +8,7 @@ let connectionString;
 const environmentalVariableSwitch = process.env.NODE_ENV;
 
 if (environmentalVariableSwitch == 'test') {
-    connectionString = config['test'].use_env_variable;
+    connectionString = config['test'];
 } else if (environmentalVariableSwitch == 'production') {
     connectionString = config['production'];
 } else {
@@ -85,7 +85,7 @@ const projectTable = async () => {
             githubLink VARCHAR NOT NULL,
             projectName VARCHAR NOT NULL,
             projectStatus VARCHAR NOT NULL,
-            clientCompany VARCHAR.
+            clientCompany VARCHAR,
             projectLeader VARCHAR,
             estimatedBudget VARCHAR,
             totalAmountSpent VARCHAR,
@@ -163,7 +163,8 @@ const activityTable = async () => {
                 read VARCHAR DEFAULT 'false',
                 body VARCHAR NOT NULL,
                 timestamp TIMESTAMP,
-                timeRecieved VARCHAR NOT NULL)`
+                timeRecieved VARCHAR NOT NULL,
+                dateRecieved VARCHAR NOT NULL)`
     try {
         await pool.query(queryActivityTable);
         console.log('activity table created');
