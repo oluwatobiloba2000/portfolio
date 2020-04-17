@@ -29,5 +29,8 @@ appRouter.get('/api/visitor', checkToken, VisitorController.GetAllVisitor)
 appRouter.post('/api/visitor/:id/:email/passphase/regenerate', checkToken, VisitorController.RegeneratePassPhase)
 appRouter.delete('/api/visitor/:id/delete', checkToken, VisitorController.deleteVisitor)
 
+//setting last logout session
+appRouter.put('/api/:id/setlastsession', lastLogoutController.updateLogoutSession);
+
 
 export default appRouter;
