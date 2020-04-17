@@ -59,5 +59,17 @@ appRouter.post(`/api/blog/post`, checkToken, blogController.addBlog)
 appRouter.delete(`/api/blog/:id/delete`)
 appRouter.put(`/api/blog/:id/update`, checkToken, blogController.updateBlog)
 
+//message route
+appRouter.post(`/api/message/send`, contactMe.sendMessage)
+// spacial admin key needed
+appRouter.get(`/api/message`, checkToken, contactMe.GetMessage)
+appRouter.post('/api/message/filter', checkToken, contactMe.FilterMessages)
+appRouter.delete('/api/message/:id/delete', checkToken, contactMe.deleteMessage)
+appRouter.put('/api/message/:id/star', checkToken, contactMe.starMessage)
+appRouter.put('/api/message/:id/unstar', checkToken, contactMe.unstarMessage)
+appRouter.put('/api/message/:id/trash', checkToken, contactMe.trashMessage)
+appRouter.put('/api/message/:id/read', checkToken, contactMe.readMessage)
+appRouter.put('/api/message/:id/unread', checkToken, contactMe.unreadMessage)
+
 
 export default appRouter;
