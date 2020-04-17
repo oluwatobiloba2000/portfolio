@@ -8,8 +8,8 @@ const jsonFormatter = {
         })
     },
 
-    success(res, description, rowCount, data){
-        res.status(200);
+    success(res, description, rowCount, data, code){
+        res.status(code ? code : 200);
         res.json({
             status : "success",
             description,
