@@ -2,24 +2,31 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import jsonFormatter from '../helpers/jsonFormat';
 import pool from '../models/index';
+import { uuid } from "uuidv4";
 dotenv.config();
 
 class Controller{
     static async addSkills (req, res){
-        const name = req.body.name;
-        const SkillsPics = req.body.SkillsPics;
-        const skillLinkWebsite = req.body.skillLinkWebsite;
-        if(!name || !SkillsPics || !skillLinkWebsite){
-            return jsonFormatter.error(res, 'All fields are required !', 400);
-        }
-        try {
-            const query = `INSERT INTO skills(name, SkillsPics, skillLinkWebsite, timestamp) VALUES($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *`
-            const value = [name, SkillsPics, skillLinkWebsite]
-            const newSkills = await pool.query(query, value);
-            return jsonFormatter.success(res, 'skill posted', newSkills.rowCount, newSkills.rows);
-        }catch(error){
-            console.error(error)
-        }
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+                  const id = uuid()
+                  const name = req.body.name;
+                  const SkillsPics = req.body.SkillsPics;
+                  const skillLinkWebsite = req.body.skillLinkWebsite;
+                  if(!id || !name || !SkillsPics || !skillLinkWebsite){
+                      return jsonFormatter.error(res, 'All fields are required !', 400);
+                  }
+                  try {
+                      const query = `INSERT INTO skills(id, name, SkillsPics, skillLinkWebsite, timestamp) VALUES($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *`
+                      const value = [id, name, SkillsPics, skillLinkWebsite]
+                      const newSkills = await pool.query(query, value);
+                      return jsonFormatter.success(res, 'skill posted', newSkills.rowCount, newSkills.rows);
+                  }catch(error){
+                      console.error(error)
+                  }
+              }})
     }
 
     static async getSkills (req, res){
@@ -33,24 +40,29 @@ class Controller{
         }
     }
     static async updateSkills (req, res){
-        const id = req.params.id;
-
-        try{
-            const query = `SELECT * FROM skills WHERE id=$1`
-            const value = [id];
-            const formerSkills = await pool.query(query, value);
-            if(!formerSkills.rows.length) return jsonFormatter.error(res, 'skills not found', 404)
-            const formerSkillsToUpdate = formerSkills.rows[0];
-            const name = req.body.name || formerSkillsToUpdate.name;
-            const SkillsPics = req.body.SkillsPics || formerSkillsToUpdate.SkillsPics;
-            const skillLinkWebsite = req.body.skillLinkWebsite || formerSkillsToUpdate.skillLinkWebsite;
-            const updatequery = `UPDATE skills SET name=$1, skillsPics=$2, skillLinkWebsite=$3 WHERE id=$4 RETURNING *`
-            const updateValues = [name, SkillsPics, skillLinkWebsite, id];
-            const newSkills = await pool.query(updatequery, updateValues);
-            return jsonFormatter.success(res, 'skill updated', newSkills.rowCount, newSkills.rows);
-        }catch(e){
-            console.error(e)
-        }
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+                  const id = req.params.id;
+          
+                  try{
+                      const query = `SELECT * FROM skills WHERE id=$1`
+                      const value = [id];
+                      const formerSkills = await pool.query(query, value);
+                      if(!formerSkills.rows.length) return jsonFormatter.error(res, 'skills not found', 404)
+                      const formerSkillsToUpdate = formerSkills.rows[0];
+                      const name = req.body.name || formerSkillsToUpdate.name;
+                      const SkillsPics = req.body.SkillsPics || formerSkillsToUpdate.SkillsPics;
+                      const skillLinkWebsite = req.body.skillLinkWebsite || formerSkillsToUpdate.skillLinkWebsite;
+                      const updatequery = `UPDATE skills SET name=$1, skillsPics=$2, skillLinkWebsite=$3 WHERE id=$4 RETURNING *`
+                      const updateValues = [name, SkillsPics, skillLinkWebsite, id];
+                      const newSkills = await pool.query(updatequery, updateValues);
+                      return jsonFormatter.success(res, 'skill updated', newSkills.rowCount, newSkills.rows);
+                  }catch(e){
+                      console.error(e)
+                  }
+              }})
     }
 
     static async deleteSkill (req, res){
