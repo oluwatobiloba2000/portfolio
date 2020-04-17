@@ -71,5 +71,11 @@ appRouter.put('/api/message/:id/trash', checkToken, contactMe.trashMessage)
 appRouter.put('/api/message/:id/read', checkToken, contactMe.readMessage)
 appRouter.put('/api/message/:id/unread', checkToken, contactMe.unreadMessage)
 
+appRouter.post(`/api/activity/add`, checkToken, ActivityController.addAnActivity)
+appRouter.get(`/api/activity/feed`, checkToken, ActivityController.Getactivities)
+appRouter.put(`/api/activity/:id/read`, checkToken, ActivityController.readActvity)
 
+appRouter.get('*', (req, res)=>{
+    jsonFormatter.error(res, 'Unknown Route', 404)
+})
 export default appRouter;
