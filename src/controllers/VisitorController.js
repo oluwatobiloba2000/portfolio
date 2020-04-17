@@ -86,6 +86,24 @@ class Controller{
               }})
     }
 
+    static async deleteVisitor (req, res){
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+                  const id = req.params.id;
+
+                  try{
+                      const query = `DELETE FROM visitorTable WHERE id=$1`
+                      const value = [id];
+                      const project = await pool.query(query, value);
+                      if(!project.rowCount) return jsonFormatter.error(res, 'visitor not found', 404)
+                      return jsonFormatter.success(res, 'visitor deleted');
+                  }catch(e){
+                      console.error(e)
+                  }
+              }})
+            }
 }
 
 export default Controller;
