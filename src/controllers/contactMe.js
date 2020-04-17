@@ -120,6 +120,34 @@ class Controller {
         }}})
     }
 
+    // this controller is to star a message
+    //you need normal admin key to pass this
+    static async starMessage(req, res) {
+        jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+                  const id = req.params.id;
+                  try {
+                      const query = `SELECT * FROM contactMe WHERE id=$1`
+                      const value = [id];
+                      const formerMessage = await pool.query(query, value);
+                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404)
+                      const formerMessageToUpdate = formerMessage.rows[0];
+                      if (formerMessageToUpdate.star == 'true') return jsonFormatter.error(res, 'message has been starred', 400)
+                      const starMessageRequest = 'true';
+                      const updatequery = `UPDATE contactMe SET star=$1 WHERE id=$2 RETURNING *`
+                      const updateValues = [starMessageRequest, id];
+                      const newStarredMessage = await pool.query(updatequery, updateValues);
+                      return jsonFormatter.success(res, 'message starred', newStarredMessage.rowCount, newStarredMessage.rows);
+                  } catch (e) {
+                      console.error(e)
+                  }
+              }
+        })
+    }
+
+
 }
 
 export default Controller;
