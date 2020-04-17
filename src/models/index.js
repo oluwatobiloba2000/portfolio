@@ -83,6 +83,13 @@ const projectTable = async () => {
             picture VARCHAR NOT NULL,
             hostedLink VARCHAR NOT NULL,
             githubLink VARCHAR NOT NULL,
+            projectName VARCHAR NOT NULL,
+            projectStatus VARCHAR NOT NULL,
+            clientCompany VARCHAR.
+            projectLeader VARCHAR,
+            estimatedBudget VARCHAR,
+            totalAmountSpent VARCHAR,
+            estimatedProjectDuration VARCHAR,
             moreDetails VARCHAR NOT NULL,
             timestamp TIMESTAMP )`
     try {
