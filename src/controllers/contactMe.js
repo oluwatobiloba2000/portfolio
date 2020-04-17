@@ -231,6 +231,31 @@ class Controller {
               }})
     }
 
+        // this controller is to read a message
+        //you need special pin to unlock this controller
+    static async unreadMessage(req, res) {
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+                  const id = req.params.id;
+                  try {
+                      const query = `SELECT * FROM contactMe WHERE id=$1`
+                      const value = [id];
+                      const formerMessage = await pool.query(query, value);
+                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404)
+                      const formerMessageToUpdate = formerMessage.rows[0];
+                      if (formerMessageToUpdate.read == 'false') return jsonFormatter.error(res, 'message has been marked as unread', 400)
+                      const MarkAsReadUnMessageRequest = 'false'
+                      const updatequery = `UPDATE contactMe SET read=$1 WHERE id=$2 RETURNING *`
+                      const updateValues = [MarkAsReadUnMessageRequest, id];
+                      const newMessageRead = await pool.query(updatequery, updateValues);
+                      return jsonFormatter.success(res, 'message marked as unread', newMessageRead.rowCount, newMessageRead.rows);
+                  } catch (e) {
+                      console.error(e)
+                  }
+              }})
+    }
 }
 
 export default Controller;
