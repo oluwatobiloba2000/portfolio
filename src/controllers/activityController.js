@@ -40,7 +40,27 @@ class Controller{
               }})
     }
 
-
+    static async readActvity(req, res){
+        jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+                  const id = req.params.id;
+          
+                  try{
+                      const query = `SELECT * FROM activity WHERE id=$1`
+                      const value = [id];
+                      const formerActivity = await pool.query(query, value);
+                      if(!formerActivity.rows.length) return jsonFormatter.error(res, 'activity not found', 404)
+                      const updatequery = `UPDATE activity SET read='true' WHERE id=$1 RETURNING *`
+                      const updateValues = [id];
+                      const readActvity = await pool.query(updatequery, updateValues);
+                      return jsonFormatter.success(res, 'activity read', readActvity.rowCount, readActvity.rows);
+                  }catch(e){
+                      console.error(e)
+                  }
+              }})
+    }
 }
 
 export default Controller;
