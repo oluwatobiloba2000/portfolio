@@ -24,7 +24,23 @@ class Controller{
         }
     }
 
- 
+    static async Getactivities (req, res){
+        jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+                  try {
+                      const query = `SELECT * from activity`
+                      const activity = await pool.query(query);
+                      if(!activity.rows.length) return jsonFormatter.success(res, 'empty');
+                      return jsonFormatter.success(res, 'Activities', activity.rowCount, activity.rows);
+                  }catch(error){
+                      console.log(error)
+                  }
+              }})
+    }
+
+
 }
 
 export default Controller;
