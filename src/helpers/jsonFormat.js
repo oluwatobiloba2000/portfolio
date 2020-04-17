@@ -16,6 +16,14 @@ const jsonFormatter = {
             rowCount,
             data
         })
+    },
+    tokenFormat(res, description, token){
+        res.status(200);
+        res.json({
+            status : "success",
+            description,
+            token
+        })
     }
 }
 
