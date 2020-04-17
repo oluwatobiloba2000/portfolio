@@ -18,7 +18,7 @@ class Controller{
             const query = `INSERT INTO activity(id, body, timeRecieved, timestamp) VALUES($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *`
             const value = [id, body, timeRecieved]
             const newActvity = await pool.query(query, value);
-            return jsonFormatter.success(res, 'activity posted', newActvity.rowCount, newActvity.rows);
+            return jsonFormatter.success(res, 'activity posted', newActvity.rowCount, newActvity.rows, 201);
         }catch(error){
             console.error(error)
         }
