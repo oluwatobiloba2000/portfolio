@@ -48,7 +48,7 @@ class Controller {
     static FilterMessages(req, res) {
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-              return res.json(err)
+              return res.status(403).json(err)
             }else{
                 var d = new Date(authorizedData.iat * 1000).toString();
                 var e = new Date(authorizedData.exp * 1000).toString();
@@ -98,7 +98,7 @@ class Controller {
     static async deleteMessage(req, res) {
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
         const id = req.params.id;
         try {
@@ -125,7 +125,7 @@ class Controller {
     static async starMessage(req, res) {
         jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
                   try {
@@ -152,7 +152,7 @@ class Controller {
     static async unstarMessage(req, res) {
         jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
                   try {
@@ -182,7 +182,7 @@ class Controller {
     static async trashMessage(req, res) {
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
                   try {
@@ -210,7 +210,7 @@ class Controller {
     static async readMessage(req, res) {
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
                   try {
@@ -236,7 +236,7 @@ class Controller {
     static async unreadMessage(req, res) {
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
                   try {

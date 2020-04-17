@@ -10,13 +10,14 @@ class Controller{
         const id = uuid();
         const body = req.body.body;
         const timeRecieved = req.body.timeRecieved;
+        const dateRecieved = req.body.dateRecieved;
 
-        if(!id  || !body || !timeRecieved){
+        if(!id  || !body || !timeRecieved || !dateRecieved){
             return jsonFormatter.error(res, 'All fields are required !', 400);
         }
         try {
-            const query = `INSERT INTO activity(id, body, timeRecieved, timestamp) VALUES($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *`
-            const value = [id, body, timeRecieved]
+            const query = `INSERT INTO activity(id, body, timeRecieved, dateRecieved, timestamp) VALUES($1, $2, $3, $4 ,CURRENT_TIMESTAMP) RETURNING *`
+            const value = [id, body, timeRecieved, dateRecieved]
             const newActvity = await pool.query(query, value);
             return jsonFormatter.success(res, 'activity posted', newActvity.rowCount, newActvity.rows, 201);
         }catch(error){
@@ -27,7 +28,7 @@ class Controller{
     static async Getactivities (req, res){
         jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   try {
                       const query = `SELECT * from activity`
@@ -43,7 +44,7 @@ class Controller{
     static async readActvity(req, res){
         jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
           

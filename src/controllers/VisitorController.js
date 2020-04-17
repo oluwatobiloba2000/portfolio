@@ -11,7 +11,7 @@ class Controller{
     static async addVisitor (req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                 const passPhaseGenerator = RandomPassword.generate({
                     length: 25,
@@ -43,7 +43,7 @@ class Controller{
     static async GetAllVisitor (req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   try {
                       const query = `SELECT * from visitorTable`
@@ -59,7 +59,7 @@ class Controller{
     static async RegeneratePassPhase(req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
                   const email = req.params.email;
@@ -89,7 +89,7 @@ class Controller{
     static async deleteVisitor (req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
 

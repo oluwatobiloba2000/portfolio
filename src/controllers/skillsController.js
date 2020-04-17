@@ -9,7 +9,7 @@ class Controller{
     static async addSkills (req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = uuid()
                   const name = req.body.name;
@@ -42,7 +42,7 @@ class Controller{
     static async updateSkills (req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
           

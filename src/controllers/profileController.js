@@ -46,7 +46,7 @@ class Controller{
     static async updateProfile(req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
           

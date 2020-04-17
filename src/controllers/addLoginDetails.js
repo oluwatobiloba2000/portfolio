@@ -11,7 +11,7 @@ class Controller{
     static async addLoginDetails (req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = uuid();
                   const username = req.body.username;
@@ -43,7 +43,7 @@ class Controller{
     static async GetLoginDetails (req, res){
         jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   try {
                       const query = `SELECT id, username, email from userDetails`;
@@ -59,7 +59,7 @@ class Controller{
     static async updateLoginDetails(req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.body.id;
                   const FormerPassword = req.body.FormerPassword;

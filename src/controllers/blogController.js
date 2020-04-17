@@ -10,7 +10,7 @@ class Controller{
     static async addBlog (req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
             }else{
                    const id = uuid();
                   const title = req.body.title;
@@ -47,7 +47,7 @@ class Controller{
     static async updateBlog(req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
                   try{
@@ -75,7 +75,7 @@ class Controller{
     static async deleteBlog (req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
-                return res.json(err)
+                return res.status(403).json(err)
               }else{
                   const id = req.params.id;
 
