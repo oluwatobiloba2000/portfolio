@@ -18,7 +18,7 @@ class Controller{
             const updatequery = `UPDATE profile SET lastLogout=$1 WHERE id=$2 RETURNING lastLogout`
             const updateValues = [lastLogout, id];
             const newLogoutSession = await pool.query(updatequery, updateValues);
-            return jsonFormatter.success(res, 'Logout saved', currentDevice,newLogoutSession.rows);
+            return jsonFormatter.success(res, 'Logout saved', newLogoutSession.rowCount,newLogoutSession.rows);
         }catch(e){
             console.error(e)
         }
