@@ -94,7 +94,32 @@ class Controller {
             }
         })
     }
-    
+    // you need special admin key to open this
+    static async deleteMessage(req, res) {
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+        const id = req.params.id;
+        try {
+            const query = `SELECT * from contactMe WHERE id=$1`
+            const value = [id]
+            const messages = await pool.query(query, value);
+            if (!messages.rowCount) {
+                return jsonFormatter.error(res, 'message not found', 404)
+            } else if (messages.rows[0].trash == 'false') {
+                return jsonFormatter.success(res, 'message must be trashed first before it can be deleted');
+            } else {
+                const query = `DELETE from contactMe WHERE id=$1`
+                const value = [id];
+                const messageToDelete = await pool.query(query, value);
+                return jsonFormatter.success(res, 'message deleted')
+            }
+        } catch (e) {
+            console.error(e)
+        }}})
+    }
+
 }
 
 export default Controller;
