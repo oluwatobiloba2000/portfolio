@@ -39,5 +39,12 @@ appRouter.post('/api/profile/post', checkToken, profileController.addProfile)
 appRouter.put('/api/profile/:id/update', checkToken, profileController.updateProfile)
 
 
+appRouter.get('/api/skills', skillsController.getSkills);
+//special admin key needed to pass here
+appRouter.post('/api/skills/post', checkToken, skillsController.addSkills)
+appRouter.put('/api/skills/:id/update', checkToken,skillsController.updateSkills)
+appRouter.delete('/api/skills/:id/delete',checkToken, skillsController.deleteSkill)
+
+
 
 export default appRouter;
