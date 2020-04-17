@@ -17,4 +17,11 @@ appRouter.get('/', (req, res)=>{
     return jsonFormatter.success(res, 'success', 200, 'none' ,'my portfolio site API made with Node and express by Anani oluwatobiloba');
 })
 
+appRouter.post('/api/login', Authentication.logInAuthUser);
+appRouter.post('/api/pin', Authentication.PinAuth)
+appRouter.get('/api/login/details', checkToken, LoginDetailsController.GetLoginDetails)
+appRouter.post('/api/login/add', checkToken, LoginDetailsController.addLoginDetails)
+appRouter.put('/api/login/update', checkToken, LoginDetailsController.updateLoginDetails)
+
+
 export default appRouter;
