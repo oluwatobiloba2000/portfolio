@@ -56,6 +56,35 @@ class Controller{
               }})
     }
 
+    static async RegeneratePassPhase(req, res){
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+                  const id = req.params.id;
+                  const email = req.params.email;
+                  const timeCreated = req.body.timeCreated;
+                  const passPhaseGenerator = RandomPassword.generate({
+                      length: 25,
+                      numbers: true
+                  });
+                  try{
+                      const used = 'false';
+                      const query = `SELECT * FROM visitorTable WHERE email=$1 AND id=$2`
+                      const value = [email, id];
+                      const formerPassPhase = await pool.query(query, value);
+                      if(!formerPassPhase.rows.length) return jsonFormatter.error(res, 'Vistor not found', 404)
+                      const formerPassPhaseToUpdate = formerPassPhase.rows[0];
+                      const PassPhase = passPhaseGenerator  || formerPassPhaseToUpdate.PassPhase;
+                      const updatequery = `UPDATE visitorTable SET passPhase=$1, used=$2, timeCreated=$3 WHERE id=$4 AND email=$5 RETURNING *`
+                      const updateValues = [ PassPhase,used, timeCreated, id, email];
+                      const newPassPhase = await pool.query(updatequery, updateValues);
+                      return jsonFormatter.success(res, 'passphase updated', newPassPhase.rowCount, newPassPhase.rows);
+                  }catch(e){
+                      console.error(e)
+                  }
+              }})
+    }
 
 }
 
