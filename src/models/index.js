@@ -34,38 +34,23 @@ const profileTable = async () => {
     id SERIAL PRIMARY KEY UNIQUE)`
     try {
         await pool.query(queryProfile);
-        console.log('1. profile table created');
+        console.log('profile table created');
     } catch (e) {
         console.log(e);
-    }
-}
-
-const socialTable = async () => {
-    const querySocial = ` CREATE TABLE IF NOT EXISTS
-    social(
-        id SERIAL PRIMARY KEY UNIQUE,
-        iconCode VARCHAR(5000),
-        name VARCHAR(5000),
-        link VARCHAR(5000))`
-    try {
-        await pool.query(querySocial);
-        console.log('2. social table created');
-    } catch (e) {
-        console.log(e)
     }
 }
 
 const skillsTable = async () => {
     const querySkills = ` CREATE TABLE IF NOT EXISTS
     skills(
-        id SERIAL PRIMARY KEY UNIQUE,
+        id VARCHAR NOT NULL,
             Name VARCHAR(5000),
             SkillsPics VARCHAR(5000),
             skillLinkWebsite VARCHAR(5000),
             timestamp TIMESTAMP)`
     try {
         await pool.query(querySkills);
-        console.log('3. skills table created');
+        console.log('skills table created');
     } catch (e) {
         console.log(e)
     }
@@ -74,7 +59,7 @@ const skillsTable = async () => {
 const blogTable = async () => {
     const queryBlog = ` CREATE TABLE IF NOT EXISTS
     blog(
-        id SERIAL PRIMARY KEY UNIQUE,
+        id VARCHAR NOT NULL,
         title VARCHAR NOT NULL,
         category VARCHAR NOT NULL,
         picture VARCHAR NOT NULL,
@@ -85,7 +70,7 @@ const blogTable = async () => {
         timestamp TIMESTAMP )`
     try {
         await pool.query(queryBlog);
-        console.log('4. blog table created');
+        console.log('blog table created');
     } catch (e) {
         console.log(e)
     }
@@ -94,7 +79,7 @@ const blogTable = async () => {
 const projectTable = async () => {
     const queryProject = ` CREATE TABLE IF NOT EXISTS
         project(
-            id SERIAL PRIMARY KEY UNIQUE,
+            id VARCHAR NOT NULL,
             picture VARCHAR NOT NULL,
             hostedLink VARCHAR NOT NULL,
             githubLink VARCHAR NOT NULL,
@@ -102,7 +87,7 @@ const projectTable = async () => {
             timestamp TIMESTAMP )`
     try {
         await pool.query(queryProject);
-        console.log('5. project table created');
+        console.log('project table created');
     } catch (e) {
         console.log(e)
     }
@@ -111,7 +96,7 @@ const projectTable = async () => {
 const contactMeTable = async () => {
     const queryContactMe = ` CREATE TABLE IF NOT EXISTS
             contactMe(
-                id SERIAL PRIMARY KEY UNIQUE,
+                id VARCHAR NOT NULL,
                 name VARCHAR NOT NULL,
                 message VARCHAR NOT NULL,
                 read VARCHAR DEFAULT 'false',
@@ -120,10 +105,11 @@ const contactMeTable = async () => {
                 timeReceived VARCHAR NOT NULL,
                 star VARCHAR DEFAULT 'false',
                 trash VARCHAR DEFAULT 'false',
+                timeTrashed VARCHAR,
                 timestamp TIMESTAMP )`
     try {
         await pool.query(queryContactMe);
-        console.log('6. contact me table created');
+        console.log('contact me table created');
     } catch (e) {
         console.log(e)
     }
@@ -131,24 +117,56 @@ const contactMeTable = async () => {
 
 const userTable = async () => {
     const queryUserTable = ` CREATE TABLE IF NOT EXISTS
-            project(
-                id SERIAL PRIMARY KEY UNIQUE,
-                emailaddress VARCHAR NOT NULL,
+            userDetails(
+                id VARCHAR NOT NULL,
+                email VARCHAR NOT NULL,
                 username VARCHAR NOT NULL,
                 password VARCHAR NOT NULL,
-                whatsappPin VARCHAR NOT NULL)`
+                specialPin VARCHAR NOT NULL)`
     try {
         await pool.query(queryUserTable);
-        console.log('7. user table created');
-        console.log(`----------------Table creation successful-----------------`)
+        console.log('user table created');
     } catch (e) {
         console.log(e)
     }
 }
 
+const visitorTable = async () => {
+    const queryVisitorTable = ` CREATE TABLE IF NOT EXISTS
+            visitorTable(
+                id VARCHAR NOT NULL,
+                email VARCHAR NOT NULL,
+                username VARCHAR,
+                PassPhase VARCHAR NOT NULL,
+                timeCreated VARCHAR,
+                timestamp TIMESTAMP,
+                used VARCHAR DEFAULT 'false')`
+    try {
+        await pool.query(queryVisitorTable);
+        console.log('visitor table created');
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+const activityTable = async () => {
+    const queryActivityTable = ` CREATE TABLE IF NOT EXISTS
+            activity(
+                id VARCHAR NOT NULL,
+                read VARCHAR DEFAULT 'false',
+                body VARCHAR NOT NULL,
+                timestamp TIMESTAMP,
+                timeRecieved VARCHAR NOT NULL)`
+    try {
+        await pool.query(queryActivityTable);
+        console.log('activity table created');
+    } catch (e) {
+        console.log(e)
+    }
+}
 const dropTable = async () => {
     try {
-        const query = "DROP TABLE IF EXISTS contactMe";
+        const query = "DROP TABLE IF EXISTS activity";
         await pool.query(query);
         console.log("Table dropped");
       } catch (e) {
@@ -158,10 +176,11 @@ const dropTable = async () => {
 
 profileTable()
 // dropTable()
-socialTable()
 skillsTable()
 blogTable()
 projectTable()
 contactMeTable()
 userTable()
+visitorTable()
+activityTable()
 export default pool;
