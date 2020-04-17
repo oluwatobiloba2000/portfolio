@@ -46,5 +46,11 @@ appRouter.put('/api/skills/:id/update', checkToken,skillsController.updateSkills
 appRouter.delete('/api/skills/:id/delete',checkToken, skillsController.deleteSkill)
 
 
+appRouter.get('/api/project', projectController.getProjects)
+// spacial admin key needed
+appRouter.post('/api/project/post', checkToken, projectController.addProject)
+appRouter.put('/api/project/:id/update', checkToken, projectController.updateProject)
+appRouter.delete('/api/project/:id/delete', checkToken, projectController.deleteProject)
+
 
 export default appRouter;
