@@ -33,7 +33,7 @@ class Controller{
                       const query = `INSERT INTO userDetails(id, email, username, password, specialPin ) VALUES($1, $2, $3, $4, $5) RETURNING *`
                       const value = [id, email, username, passphase, hashedSpecialPin];
                       const newLoginDetails = await pool.query(query, value);
-                      return jsonFormatter.success(res, 'Login Details Created', newLoginDetails.rowCount, newLoginDetails.rows);
+                      return jsonFormatter.success(res, 'Login Details Created', newLoginDetails.rowCount, newLoginDetails.rows, 201);
                   }catch(error){
                       console.error(error)
                   }

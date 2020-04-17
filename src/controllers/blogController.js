@@ -26,7 +26,7 @@ class Controller{
                       const query = `INSERT INTO blog(id, title, category, picture, date, time, story, timestamp) VALUES($1, $2, $3, $4, $5, $6, $7 CURRENT_TIMESTAMP) RETURNING *`
                       const value = [id, title, category, picture, date, time, story]
                       const newBlog = await pool.query(query, value);
-                      return jsonFormatter.success(res, 'blog posted', newBlog.rowCount, newBlog.rows);
+                      return jsonFormatter.success(res, 'blog posted', newBlog.rowCount, newBlog.rows, 201);
                   }catch(error){
                       console.error(error)
                   }
