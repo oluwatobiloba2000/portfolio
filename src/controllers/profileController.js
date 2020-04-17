@@ -26,7 +26,7 @@ class Controller{
             const query = `INSERT INTO profile(id, name, about, profilePics, backgroundPics, birthday, phoneNumber, cvLink, dateLunched) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`
             const value = [id, name, about, profilePics, backgroundPics, birthday, phoneNumber, cvLink, dateLunched]
             const newProfile = await pool.query(query, value);
-            return jsonFormatter.success(res, 'profile posted', newProfile.rowCount, newProfile.rows);
+            return jsonFormatter.success(res, 'profile posted', newProfile.rowCount, newProfile.rows, 201);
         }catch(error){
             console.error(error)
         }

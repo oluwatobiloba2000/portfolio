@@ -24,7 +24,7 @@ class Controller {
             const query = `INSERT INTO contactMe(id, name, message, subject, senderEmailAddress, timeReceived, timestamp) VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP) RETURNING *`
             const value = [id, name, message, subject, senderEmailAddress, timeReceived]
             const newMessage = await pool.query(query, value);
-            return jsonFormatter.success(res, 'message sent', newMessage.rowCount, newMessage.rows);
+            return jsonFormatter.success(res, 'message sent', newMessage.rowCount, newMessage.rows, 201);
         } catch (error) {
             console.error(error)
         }
