@@ -40,6 +40,22 @@ class Controller{
               }})
     }
 
+    static async GetAllVisitor (req, res){
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+                  try {
+                      const query = `SELECT * from visitorTable`
+                      const AllVisitors = await pool.query(query);
+                      if(!AllVisitors.rows.length) return jsonFormatter.success(res, 'empty');
+                      return jsonFormatter.success(res, 'All visitors', AllVisitors.rowCount, AllVisitors.rows);
+                  }catch(error){
+                      console.log(error)
+                  }
+              }})
+    }
+
 
 }
 
