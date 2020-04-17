@@ -32,5 +32,12 @@ appRouter.delete('/api/visitor/:id/delete', checkToken, VisitorController.delete
 //setting last logout session
 appRouter.put('/api/:id/setlastsession', lastLogoutController.updateLogoutSession);
 
+//[getting current profile for users]
+appRouter.get('/api/profile', profileController.Getprofile);
+//special admin key needed
+appRouter.post('/api/profile/post', checkToken, profileController.addProfile)
+appRouter.put('/api/profile/:id/update', checkToken, profileController.updateProfile)
+
+
 
 export default appRouter;
