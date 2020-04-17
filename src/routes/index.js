@@ -23,5 +23,11 @@ appRouter.get('/api/login/details', checkToken, LoginDetailsController.GetLoginD
 appRouter.post('/api/login/add', checkToken, LoginDetailsController.addLoginDetails)
 appRouter.put('/api/login/update', checkToken, LoginDetailsController.updateLoginDetails)
 
+appRouter.post('/api/login/visitor', Authentication.VisitorAuth);
+appRouter.post('/api/visitor/add', checkToken, VisitorController.addVisitor)
+appRouter.get('/api/visitor', checkToken, VisitorController.GetAllVisitor)
+appRouter.post('/api/visitor/:id/:email/passphase/regenerate', checkToken, VisitorController.RegeneratePassPhase)
+appRouter.delete('/api/visitor/:id/delete', checkToken, VisitorController.deleteVisitor)
+
 
 export default appRouter;
