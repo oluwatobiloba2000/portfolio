@@ -173,7 +173,39 @@ class Controller {
               }})
     }
 
- 
+    // this controller is to trash a message
+    // to trash a message, pass time to the body
+    // eg. {
+    // "timetrashed": "13th april 2020 at 2:00pm"
+    // }
+    //you need special admin key to unlock this controller
+    static async trashMessage(req, res) {
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+                  const id = req.params.id;
+                  try {
+                      const query = `SELECT * FROM contactMe WHERE id=$1`
+                      const value = [id];
+                      const formerMessage = await pool.query(query, value);
+                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404)
+                      const formerMessageToUpdate = formerMessage.rows[0];
+                      if (formerMessageToUpdate.trash == 'true') return jsonFormatter.error(res, 'message has been trashed permanently', 400)
+                      const timeTrashed = req.body.timetrashed;
+                      if(!timeTrashed) return jsonFormatter.error(res, 'time is needed to passed to the body', 400)
+                      const trashMessageRequest = 'true';
+                      const updatequery = `UPDATE contactMe SET trash=$1, timeTrashed=$2 WHERE id=$3 RETURNING *`
+                      const updateValues = [trashMessageRequest, timeTrashed, id];
+                      const newTrashedMessage = await pool.query(updatequery, updateValues);
+                      return jsonFormatter.success(res, 'message trashed', newTrashedMessage.rowCount, newTrashedMessage.rows);
+                  } catch (e) {
+                      console.error(e)
+                  }
+               }})
+    }
+
+
 }
 
 export default Controller;
