@@ -52,5 +52,12 @@ appRouter.post('/api/project/post', checkToken, projectController.addProject)
 appRouter.put('/api/project/:id/update', checkToken, projectController.updateProject)
 appRouter.delete('/api/project/:id/delete', checkToken, projectController.deleteProject)
 
+// blog routes
+appRouter.get(`/api/blog`, blogController.GetBlog)
+//// spacial admin key needed
+appRouter.post(`/api/blog/post`, checkToken, blogController.addBlog)
+appRouter.delete(`/api/blog/:id/delete`)
+appRouter.put(`/api/blog/:id/update`, checkToken, blogController.updateBlog)
+
 
 export default appRouter;
