@@ -40,7 +40,23 @@ class Controller{
               }})
     }
 
- 
+    static async GetLoginDetails (req, res){
+        jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.json(err)
+              }else{
+                  try {
+                      const query = `SELECT id, username, email from userDetails`;
+                      const LoginDetails = await pool.query(query);
+                      if(!LoginDetails.rows.length) return jsonFormatter.success(res, 'empty');
+                      return jsonFormatter.success(res, 'login details', LoginDetails.rowCount, LoginDetails.rows);
+                  }catch(error){
+                      console.log(error)
+                  }
+              }})
+    }
+
+
 }
 
 export default Controller;
