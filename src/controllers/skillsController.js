@@ -22,7 +22,7 @@ class Controller{
                       const query = `INSERT INTO skills(id, name, SkillsPics, skillLinkWebsite, timestamp) VALUES($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *`
                       const value = [id, name, SkillsPics, skillLinkWebsite]
                       const newSkills = await pool.query(query, value);
-                      return jsonFormatter.success(res, 'skill posted', newSkills.rowCount, newSkills.rows);
+                      return jsonFormatter.success(res, 'skill posted', newSkills.rowCount, newSkills.rows, 201);
                   }catch(error){
                       console.error(error)
                   }

@@ -21,7 +21,7 @@ class Controller{
                       const query = `INSERT INTO project(picture, hostedLink, githubLink, moreDetails, timestamp) VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *`
                       const value = [picture, hostedLink, githubLink, moreDetails]
                       const newProject = await pool.query(query, value);
-                      return jsonFormatter.success(res, 'project posted', newProject.rowCount, newProject.rows);
+                      return jsonFormatter.success(res, 'project posted', newProject.rowCount, newProject.rows, 201);
                   }catch(error){
                       console.error(error)
                   }

@@ -33,7 +33,7 @@ class Controller{
                       const query = `INSERT INTO visitorTable(id, email, PassPhase,timeCreated, timestamp) VALUES($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *`
                       const value = [id, email, PassPhase, timeCreated]
                       const newVisitor = await pool.query(query, value);
-                      return jsonFormatter.success(res, 'New visitor created', newVisitor.rowCount, newVisitor.rows);
+                      return jsonFormatter.success(res, 'New visitor created', newVisitor.rowCount, newVisitor.rows, 201);
                   }catch(error){
                       console.error(error)
                   }
