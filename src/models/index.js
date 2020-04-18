@@ -1,13 +1,24 @@
 import pg from "pg";
-import config from '../config/index';
+import chalk from 'chalk';
 import dotenv from "dotenv";
+import config from '../config/index';
 
+const log = console.log;
+const error = chalk.bold.red.inverse.bgWhite;
+const errorMessage = chalk.white.bgGrey;
+
+ 
 dotenv.config();
 
 let connectionString;
 const environmentalVariableSwitch = process.env.NODE_ENV;
 
-if (environmentalVariableSwitch == 'test') {
+if(!process.env.DEV_USER) {
+    log(error(`Error From src/models/index.js`), errorMessage(`Fill in your database details in your ${chalk.keyword('cyan')('.env')} file`))
+}else if(!environmentalVariableSwitch){
+    log(error(`Error From src/models/index.js`), errorMessage(`${chalk.keyword('cyan')('NODE_ENV in .env')} file needs either 'test' or 'production' or 'development'`))
+}
+else if (environmentalVariableSwitch == 'test') {
     connectionString = config['test'];
 } else if (environmentalVariableSwitch == 'production') {
     connectionString = config['production'];
@@ -15,14 +26,13 @@ if (environmentalVariableSwitch == 'test') {
     connectionString = config['development'];
 }
 
-console.log(connectionString)
 const pool = new pg.Pool(connectionString);
 
 pool.on('connect', () => {})
 
 const profileTable = async () => {
     const queryProfile = ` CREATE TABLE IF NOT EXISTS
-   profile(name VARCHAR NOT NULL,
+    profile(name VARCHAR NOT NULL,
     about VARCHAR NOT NULL,
     profilePics VARCHAR(5000),
     backgroundPics VARCHAR(5000),
@@ -34,9 +44,9 @@ const profileTable = async () => {
     id SERIAL PRIMARY KEY UNIQUE)`
     try {
         await pool.query(queryProfile);
-        console.log('profile table created');
+        log(`${chalk.keyword('orange')('profile table created')}`);
     } catch (e) {
-        console.log(e);
+        log(error(`Error From src/models/index.js - profileTable`), errorMessage({e}))
     }
 }
 
@@ -50,9 +60,9 @@ const skillsTable = async () => {
             timestamp TIMESTAMP)`
     try {
         await pool.query(querySkills);
-        console.log('skills table created');
+        log(`${chalk.keyword('orange')('skills table created')}`);
     } catch (e) {
-        console.log(e)
+        log(error(`Error From src/models/index.js - skillsTable`), errorMessage({e}))
     }
 }
 
@@ -70,9 +80,9 @@ const blogTable = async () => {
         timestamp TIMESTAMP )`
     try {
         await pool.query(queryBlog);
-        console.log('blog table created');
+        log(`${chalk.keyword('orange')('blog table created')}`);
     } catch (e) {
-        console.log(e)
+        log(error(`Error From src/models/index.js - blogTable`), errorMessage({e}))
     }
 }
 
@@ -92,11 +102,11 @@ const projectTable = async () => {
             estimatedProjectDuration VARCHAR,
             moreDetails VARCHAR NOT NULL,
             timestamp TIMESTAMP )`
-    try {
+            try {
         await pool.query(queryProject);
-        console.log('project table created');
+        log(`${chalk.keyword('orange')('project table created')}`);
     } catch (e) {
-        console.log(e)
+        log(error(`Error From src/models/index.js - projectTable`), errorMessage({e}))
     }
 }
 
@@ -114,17 +124,17 @@ const contactMeTable = async () => {
                 trash VARCHAR DEFAULT 'false',
                 timeTrashed VARCHAR,
                 timestamp TIMESTAMP )`
-    try {
-        await pool.query(queryContactMe);
-        console.log('contact me table created');
+                try {
+                    await pool.query(queryContactMe);
+        log(`${chalk.keyword('orange')('contact me table created')}`);
     } catch (e) {
-        console.log(e)
+        log(error(`Error From src/models/index.js - contactMeTable`), errorMessage({e}))
     }
 }
 
 const userTable = async () => {
     const queryUserTable = ` CREATE TABLE IF NOT EXISTS
-            userDetails(
+    userDetails(
                 id VARCHAR NOT NULL,
                 email VARCHAR NOT NULL,
                 username VARCHAR NOT NULL,
@@ -132,15 +142,15 @@ const userTable = async () => {
                 specialPin VARCHAR NOT NULL)`
     try {
         await pool.query(queryUserTable);
-        console.log('user table created');
+        log(`${chalk.keyword('orange')('user table created')}`);
     } catch (e) {
-        console.log(e)
+        log(error(`Error From src/models/index.js - userTable`), errorMessage({e}))
     }
 }
 
 const visitorTable = async () => {
     const queryVisitorTable = ` CREATE TABLE IF NOT EXISTS
-            visitorTable(
+    visitorTable(
                 id VARCHAR NOT NULL,
                 email VARCHAR NOT NULL,
                 username VARCHAR,
@@ -150,15 +160,15 @@ const visitorTable = async () => {
                 used VARCHAR DEFAULT 'false')`
     try {
         await pool.query(queryVisitorTable);
-        console.log('visitor table created');
+        log(`${chalk.keyword('orange')('visitor table created')}`);
     } catch (e) {
-        console.log(e)
+        log(error(`Error From src/models/index.js - visitorTable`), errorMessage({e}))
     }
 }
 
 const activityTable = async () => {
     const queryActivityTable = ` CREATE TABLE IF NOT EXISTS
-            activity(
+    activity(
                 id VARCHAR NOT NULL,
                 read VARCHAR DEFAULT 'false',
                 body VARCHAR NOT NULL,
@@ -167,9 +177,9 @@ const activityTable = async () => {
                 dateRecieved VARCHAR NOT NULL)`
     try {
         await pool.query(queryActivityTable);
-        console.log('activity table created');
+        log(`${chalk.keyword('orange')('activity table created')}`);
     } catch (e) {
-        console.log(e)
+        log(error(`Error From src/models/index.js - activityTable`), errorMessage({e}))
     }
 }
 const dropTable = async () => {
@@ -178,8 +188,8 @@ const dropTable = async () => {
         await pool.query(query);
         console.log("Table dropped");
       } catch (e) {
-        pool.end();
-      }
+          pool.end();
+        }
 }
 
 profileTable()
@@ -191,4 +201,7 @@ contactMeTable()
 userTable()
 visitorTable()
 activityTable()
+
+
+log(chalk.keyword('orange')('Yay for orange colored text!'));
 export default pool;

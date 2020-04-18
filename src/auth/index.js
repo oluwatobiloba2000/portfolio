@@ -1,9 +1,16 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
+import chalk from "chalk";
 import jsonFormatter from '../helpers/jsonFormat';
 import pool from '../models/index';
 dotenv.config();
+
+const log = console.log;
+const error = chalk.bold.red.inverse.bgWhite;
+const errorMessage = chalk.white.bgGrey;
+const success = chalk.bold.black.bgGreen;
+const successMessage = chalk.green;
 
 class Authentication{
   // logining in user
@@ -21,8 +28,9 @@ class Authentication{
       if(match) {
         jwt.sign({email, password} , process.env.EMAIL_AND_PASSWORD_KEY, {expiresIn : '2h'} , (err, token)=>{
         if(err){
-            return console.log(err)
+            return log(error('Error from : src/auth/index.js - logInAuthUser'), errorMessage(err));
         }else{
+            log(success('success from : src/auth/index.js - logInAuthUser'), successMessage('Login admin success'));
             return jsonFormatter.tokenFormat(res, 'Login Admin success', token)
         }})
     }
@@ -30,7 +38,7 @@ class Authentication{
         return jsonFormatter.error(res, 'incorrect email or password', 401)
     }
     }catch(err){
-        console.error(err)
+        log(error('Error from : src/auth/index.js - logInAuthUser'), errorMessage(err));
     }}
 
     // this controller is for second step Authentication which requests for a special pin
@@ -46,13 +54,13 @@ class Authentication{
         if(match) {
          jwt.sign({pin} , process.env.SPECIAL_PIN_KEY, {expiresIn : '1h'} , (err, token)=>{
             if(err){
-               return console.log(err)
+               return log(error('Error from : src/auth/index.js - logInAuthUser'), errorMessage(err));
             }else{
                 return jsonFormatter.tokenFormat(res, 'pin token generated', token)
             }})
             }else { return jsonFormatter.error(res, 'Incorrect pin', 401)}}
         }catch(err){
-            console.error(err)
+            log(error('Error from : src/auth/index.js - logInAuthUser'), errorMessage(err));
         }}
 
    // this controller is  to authenticate visitors to the admin dashboard
@@ -74,13 +82,13 @@ class Authentication{
             const returnedData = await pool.query(checkPinQuery, valueCheck);
          jwt.sign({email, password} , process.env.EMAIL_AND_PASSWORD_KEY, {expiresIn : '600000'} , (err, token)=>{
             if(err){
-               return console.log(err)
+               return log(error('Error from : src/auth/index.js - VisitorAuth'), errorMessage(err));
             }else{
                 return jsonFormatter.tokenFormat(res, `Vistor token generated for : ${email}`, token)
             }})
             }else { return jsonFormatter.error(res, 'Incorrect Username or Password', 401)}}
         }catch(err){
-            console.error(err)
+            log(error('Error from : src/auth/index.js - VisitorAuth'), errorMessage(err));
         }}
     }
 
@@ -94,10 +102,10 @@ const checkToken = (req, res, next) =>{
         const token = bearer[1];
 
         req.token = token;
-
         next();
     }else{
         // if header is undefined , return bad request
+        log(error('Error from : src/auth/index.js - checkToken'), errorMessage('Token is needed for the route'));
         res.sendStatus(403)
     }
 }
