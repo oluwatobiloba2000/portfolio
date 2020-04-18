@@ -4,8 +4,16 @@ import { uuid } from 'uuidv4';
 import jsonFormatter from '../helpers/jsonFormat';
 import pool from '../models/index';
 import bcrypt from 'bcrypt';
+import chalk from 'chalk';
 import SendNotificationEmail from '../helpers/emailNotification';
 dotenv.config();
+
+const log = console.log;
+const error = chalk.bold.red.inverse.bgWhite;
+const errorMessage = chalk.white.bgGrey;
+const success = chalk.bold.black.bgGreen;
+const successMessage = chalk.green;
+
 
 class Controller{
     static async addLoginDetails (req, res){
@@ -34,8 +42,8 @@ class Controller{
                       const value = [id, email, username, passphase, hashedSpecialPin];
                       const newLoginDetails = await pool.query(query, value);
                       return jsonFormatter.success(res, 'Login Details Created', newLoginDetails.rowCount, newLoginDetails.rows, 201);
-                  }catch(error){
-                      console.error(error)
+                  }catch(err){
+                    return log(error('Error from : src/contollers/addLoginDetails.js - addLoginDetails'), errorMessage(err));
                   }
               }})
     }
@@ -50,8 +58,8 @@ class Controller{
                       const LoginDetails = await pool.query(query);
                       if(!LoginDetails.rows.length) return jsonFormatter.success(res, 'empty');
                       return jsonFormatter.success(res, 'login details', LoginDetails.rowCount, LoginDetails.rows);
-                  }catch(error){
-                      console.log(error)
+                  }catch(err){
+                   return log(error('Error from : src/contollers/addLoginDetails.js - addLoginDetails'), errorMessage(err));
                   }
               }})
     }
@@ -86,7 +94,7 @@ class Controller{
                            return jsonFormatter.error(res, 'password does not match');
                        }
                   }catch(e){
-                      console.error(e)
+                  return  log(error('Error from : src/contollers/addLoginDetails.js - addLoginDetails'), errorMessage(e));
                   }
               }})
     }

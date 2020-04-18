@@ -1,9 +1,17 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import chalk from 'chalk';
 import jsonFormatter from '../helpers/jsonFormat';
 import pool from '../models/index';
 import { uuid } from "uuidv4";
 dotenv.config();
+
+const log = console.log;
+const error = chalk.bold.red.inverse.bgWhite;
+const errorMessage = chalk.white.bgGrey;
+const success = chalk.bold.black.bgGreen;
+const successMessage = chalk.green;
+
 
 class Controller{
     static async addSkills (req, res){
@@ -23,8 +31,8 @@ class Controller{
                       const value = [id, name, SkillsPics, skillLinkWebsite]
                       const newSkills = await pool.query(query, value);
                       return jsonFormatter.success(res, 'skill posted', newSkills.rowCount, newSkills.rows, 201);
-                  }catch(error){
-                      console.error(error)
+                  }catch(err){
+                    log(error('Error from : src/contollers/skillsController.js - addSkills'), errorMessage(err));
                   }
               }})
     }
@@ -35,8 +43,8 @@ class Controller{
             const skills = await pool.query(query);
             if(!skills.rows.length) return jsonFormatter.success(res, 'empty');
             return jsonFormatter.success(res, 'All Skills', skills.rowCount, skills.rows)
-        }catch(e){
-            console.error(e);
+        }catch(err){
+            log(error('Error from : src/contollers/skillsController.js - getSkills'), errorMessage(err));
         }
     }
     static async updateSkills (req, res){
@@ -59,8 +67,8 @@ class Controller{
                       const updateValues = [name, SkillsPics, skillLinkWebsite, id];
                       const newSkills = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'skill updated', newSkills.rowCount, newSkills.rows);
-                  }catch(e){
-                      console.error(e)
+                  }catch(err){
+                    log(error('Error from : src/contollers/skillsController.js - updateSkills'), errorMessage(err));
                   }
               }})
     }
@@ -74,8 +82,8 @@ class Controller{
             const skill = await pool.query(query, value);
             if(!skill.rowCount) return jsonFormatter.error(res, 'skills not found', 404)
             return jsonFormatter.success(res, 'skill deleted');
-        }catch(e){
-            console.error(e)
+        }catch(err){
+            log(error('Error from : src/contollers/skillsController.js - deleteSkill'), errorMessage(err));
         }
     }
 }

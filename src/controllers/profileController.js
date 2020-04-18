@@ -1,9 +1,16 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import chalk from 'chalk';
 import jsonFormatter from '../helpers/jsonFormat';
 import pool from '../models/index';
 import {uuid} from 'uuidv4';
 dotenv.config();
+
+const log = console.log;
+const error = chalk.bold.red.inverse.bgWhite;
+const errorMessage = chalk.white.bgGrey;
+const success = chalk.bold.black.bgGreen;
+const successMessage = chalk.green;
 
 class Controller{
     static async addProfile (req, res){
@@ -27,8 +34,8 @@ class Controller{
             const value = [id, name, about, profilePics, backgroundPics, birthday, phoneNumber, cvLink, dateLunched]
             const newProfile = await pool.query(query, value);
             return jsonFormatter.success(res, 'profile posted', newProfile.rowCount, newProfile.rows, 201);
-        }catch(error){
-            console.error(error)
+        }catch(err){
+            log(error('Error from : src/contollers/profileController.js - addProfile'), errorMessage(err));
         }
     }
 
@@ -38,8 +45,8 @@ class Controller{
             const profile = await pool.query(query);
             if(!profile.rows.length) return jsonFormatter.success(res, 'empty');
             return jsonFormatter.success(res, 'your profile', profile.rowCount, profile.rows);
-        }catch(error){
-            console.log(error)
+        }catch(err){
+            log(error('Error from : src/contollers/profileController.js - Getprofile'), errorMessage(err));
         }
     }
 
@@ -68,8 +75,8 @@ class Controller{
                       const updateValues = [name, about, profilePics, backgroundPics, birthday, phoneNumber, cvLink, dateLunched, id];
                       const newProfile = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'profile updated', newProfile.rowCount, newProfile.rows);
-                  }catch(e){
-                      console.error(e)
+                  }catch(err){
+                    log(error('Error from : src/contollers/profileController.js - updateProfile'), errorMessage(err));
                   }
               }})
     }

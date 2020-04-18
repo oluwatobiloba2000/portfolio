@@ -3,9 +3,16 @@ import dotenv from 'dotenv';
 import jsonFormatter from '../helpers/jsonFormat';
 import RandomPassword from 'generate-password';
 import pool from '../models/index';
+import chalk from 'chalk';
 import {uuid} from 'uuidv4';
 import SendNotificationEmail from '../helpers/emailNotification';
 dotenv.config();
+
+const log = console.log;
+const error = chalk.bold.red.inverse.bgWhite;
+const errorMessage = chalk.white.bgGrey;
+const success = chalk.bold.black.bgGreen;
+const successMessage = chalk.green;
 
 class Controller{
     static async addVisitor (req, res){
@@ -34,8 +41,8 @@ class Controller{
                       const value = [id, email, PassPhase, timeCreated]
                       const newVisitor = await pool.query(query, value);
                       return jsonFormatter.success(res, 'New visitor created', newVisitor.rowCount, newVisitor.rows, 201);
-                  }catch(error){
-                      console.error(error)
+                  }catch(err){
+                    log(error('Error from : src/contollers/VisitorController.js - addVisitor'), errorMessage(err));
                   }
               }})
     }
@@ -50,8 +57,8 @@ class Controller{
                       const AllVisitors = await pool.query(query);
                       if(!AllVisitors.rows.length) return jsonFormatter.success(res, 'empty');
                       return jsonFormatter.success(res, 'All visitors', AllVisitors.rowCount, AllVisitors.rows);
-                  }catch(error){
-                      console.log(error)
+                  }catch(err){
+                    log(error('Error from : src/contollers/VisitorController.js - GetAllVisitor'), errorMessage(err));
                   }
               }})
     }
@@ -80,8 +87,8 @@ class Controller{
                       const updateValues = [ PassPhase,used, timeCreated, id, email];
                       const newPassPhase = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'passphase updated', newPassPhase.rowCount, newPassPhase.rows);
-                  }catch(e){
-                      console.error(e)
+                  }catch(err){
+                    log(error('Error from : src/contollers/VisitorController.js - RegeneratePassPhase'), errorMessage(err));
                   }
               }})
     }
@@ -99,8 +106,8 @@ class Controller{
                       const project = await pool.query(query, value);
                       if(!project.rowCount) return jsonFormatter.error(res, 'visitor not found', 404)
                       return jsonFormatter.success(res, 'visitor deleted');
-                  }catch(e){
-                      console.error(e)
+                  }catch(err){
+                    log(error('Error from : src/contollers/VisitorController.js - deleteVisitor'), errorMessage(err));
                   }
               }})
             }

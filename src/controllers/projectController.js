@@ -1,9 +1,16 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import chalk from 'chalk';
 import jsonFormatter from '../helpers/jsonFormat';
 import pool from '../models/index';
 import { uuid } from 'uuidv4';
 dotenv.config();
+
+const log = console.log;
+const error = chalk.bold.red.inverse.bgWhite;
+const errorMessage = chalk.white.bgGrey;
+const success = chalk.bold.black.bgGreen;
+const successMessage = chalk.green;
 
 class Controller{
     static async addProject (req, res){
@@ -31,8 +38,8 @@ class Controller{
                       const value = [id, picture, hostedLink, githubLink, projectName, clientCompany , projectLeader, estimatedBudget ,projectStatus,totalAmountSpent, estimatedProjectDuration, moreDetails]
                       const newProject = await pool.query(query, value);
                       return jsonFormatter.success(res, 'project posted', newProject.rowCount, newProject.rows, 201);
-                  }catch(error){
-                      console.error(error)
+                  }catch(err){
+                    log(error('Error from : src/contollers/projectController.js - addproject'), errorMessage(err));
                   }
               }})
     }
@@ -43,8 +50,8 @@ class Controller{
             const project = await pool.query(query);
             if(!project.rows.length) return jsonFormatter.success(res, 'empty');
             return jsonFormatter.success(res, 'All projects', project.rowCount, project.rows)
-        }catch(e){
-            console.error(e);
+        }catch(err){
+            log(error('Error from : src/contollers/projectController.js - GetProject'), errorMessage(err));
         }
     }
 
@@ -75,8 +82,8 @@ class Controller{
                       const updateValues = [picture, hostedLink, githubLink, projectName,clientCompany, projectLeader, estimatedBudget ,projectStatus,totalAmountSpent, estimatedProjectDuration, moreDetails, id];
                       const newProject = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'skill updated', newProject.rowCount, newProject.rows);
-                  }catch(e){
-                      console.error(e)
+                  }catch(err){
+                    log(error('Error from : src/contollers/projectController.js - updateProject'), errorMessage(err));
                   }
               }})
     }
@@ -94,8 +101,8 @@ class Controller{
                       const project = await pool.query(query, value);
                       if(!project.rowCount) return jsonFormatter.error(res, 'project not found', 404)
                       return jsonFormatter.success(res, 'project deleted');
-                  }catch(e){
-                      console.error(e)
+                  }catch(err){
+                    log(error('Error from : src/contollers/projectController.js - deleteProject'), errorMessage(err));
                   }
               }})
     }

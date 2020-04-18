@@ -3,10 +3,17 @@ import {
     uuid
 } from 'uuidv4'
 import dotenv from 'dotenv';
+import chalk from 'chalk';
 import jsonFormatter from '../helpers/jsonFormat';
 import SendEmailMessage from '../helpers/emailNotification';
 import pool from '../models/index';
 dotenv.config();
+
+const log = console.log;
+const error = chalk.bold.red.inverse.bgWhite;
+const errorMessage = chalk.white.bgGrey;
+const success = chalk.bold.black.bgGreen;
+const successMessage = chalk.green;
 
 class Controller {
     static async sendMessage(req, res) {
@@ -25,8 +32,8 @@ class Controller {
             const value = [id, name, message, subject, senderEmailAddress, timeReceived]
             const newMessage = await pool.query(query, value);
             return jsonFormatter.success(res, 'message sent', newMessage.rowCount, newMessage.rows, 201);
-        } catch (error) {
-            console.error(error)
+        } catch (err) {
+            log(error('Error from : src/contollers/contactMe.js - sendMessage'), errorMessage(err));
         }
     }
 
@@ -36,8 +43,8 @@ class Controller {
             const messages = await pool.query(query);
             if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
             return jsonFormatter.success(res, 'All messages', messages.rowCount, messages.rows);
-        } catch (error) {
-            console.log(error)
+        } catch (err) {
+            log(error('Error from : src/contollers/contactMe.js - Getmessage'), errorMessage(err));
         }
     }
     //To view read and unread messages, 
@@ -63,8 +70,8 @@ class Controller {
                         const messages = await pool.query(query, value);
                         if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
                         return jsonFormatter.success(res, filterMessage == 'true' ? 'Read messages' : 'Unread messages', messages.rowCount, messages.rows);
-                    } catch (error) {
-                        console.log(error)
+                    } catch (err) {
+                        log(error('Error from : src/contollers/contactMe.js - filterMessage'), errorMessage(err));
                     }
                 } else if(filterMessage == 'show trash messages') {
                    const trashMessages = 'true';
@@ -74,8 +81,8 @@ class Controller {
                        const messages = await pool.query(query, value);
                        if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
                        return jsonFormatter.success(res, 'trash messages', messages.rowCount, messages.rows);
-                   }catch(e){
-                       console.error(e)
+                   }catch(err){
+                    log(error('Error from : src/contollers/contactMe.js - sendMessage'), errorMessage(err));
                    }
                 }if (filterMessage == 'show starred messages' || filterMessage == 'show unstarred messages') {
                     let filterMessageRequest = filterMessage == "show starred messages" ? "true" : "false";
@@ -85,8 +92,8 @@ class Controller {
                         const messages = await pool.query(query, value);
                         if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
                         return jsonFormatter.success(res, filterMessage == 'true' ? 'starred messages' : 'unstarred messages', messages.rowCount, messages.rows);
-                    } catch (error) {
-                        console.log(error)
+                    } catch (errr) {
+                        log(error('Error from : src/contollers/contactMe.js - sendMessage'), errorMessage(err));
                     }
                 }else {
                     return jsonFormatter.error(res, 'field needed are "show read messages" or "show unread messages" or "show trash messages" or "show starred messages" or "show unstarred messages"', 400);
@@ -115,8 +122,8 @@ class Controller {
                 const messageToDelete = await pool.query(query, value);
                 return jsonFormatter.success(res, 'message deleted')
             }
-        } catch (e) {
-            console.error(e)
+        } catch (err) {
+            log(error('Error from : src/contollers/contactMe.js - deleteMessage'), errorMessage(err));
         }}})
     }
 
@@ -140,8 +147,8 @@ class Controller {
                       const updateValues = [starMessageRequest, id];
                       const newStarredMessage = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'message starred', newStarredMessage.rowCount, newStarredMessage.rows);
-                  } catch (e) {
-                      console.error(e)
+                  } catch (err) {
+                    log(error('Error from : src/contollers/contactMe.js - starMessage'), errorMessage(err));
                   }
               }
         })
@@ -167,8 +174,8 @@ class Controller {
                       const updateValues = [starMessageRequest, id];
                       const newStarredMessage = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'message unstarred', newStarredMessage.rowCount, newStarredMessage.rows);
-                  } catch (e) {
-                      console.error(e)
+                  } catch (err) {
+                    log(error('Error from : src/contollers/contactMe.js - unstarMessage'), errorMessage(err));
                   }
               }})
     }
@@ -199,8 +206,8 @@ class Controller {
                       const updateValues = [trashMessageRequest, timeTrashed, id];
                       const newTrashedMessage = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'message trashed', newTrashedMessage.rowCount, newTrashedMessage.rows);
-                  } catch (e) {
-                      console.error(e)
+                  } catch (err) {
+                    log(error('Error from : src/contollers/contactMe.js - trashMessage'), errorMessage(err));
                   }
                }})
     }
@@ -225,8 +232,8 @@ class Controller {
                       const updateValues = [MarkAsReadMessageRequest, id];
                       const newMessageRead = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'message marked as read', newMessageRead.rowCount, newMessageRead.rows);
-                  } catch (e) {
-                      console.error(e)
+                  } catch (err) {
+                    log(error('Error from : src/contollers/contactMe.js - readMessage'), errorMessage(err));
                   }
               }})
     }
@@ -251,8 +258,8 @@ class Controller {
                       const updateValues = [MarkAsReadUnMessageRequest, id];
                       const newMessageRead = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'message marked as unread', newMessageRead.rowCount, newMessageRead.rows);
-                  } catch (e) {
-                      console.error(e)
+                  } catch (err) {
+                    log(error('Error from : src/contollers/contactMe.js - unreadMessage'), errorMessage(err));
                   }
               }})
     }

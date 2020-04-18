@@ -3,7 +3,14 @@ import dotenv from 'dotenv';
 import jsonFormatter from '../helpers/jsonFormat';
 import pool from '../models/index';
 import {uuid} from 'uuidv4';
+import chalk from 'chalk';
 dotenv.config();
+
+const log = console.log;
+const error = chalk.bold.red.inverse.bgWhite;
+const errorMessage = chalk.white.bgGrey;
+const success = chalk.bold.black.bgGreen;
+const successMessage = chalk.green;
 
 class Controller{
     static async addAnActivity (req, res){
@@ -21,7 +28,7 @@ class Controller{
             const newActvity = await pool.query(query, value);
             return jsonFormatter.success(res, 'activity posted', newActvity.rowCount, newActvity.rows, 201);
         }catch(error){
-            console.error(error)
+            return log(error('Error from : src/contollers/activityController.js - addAnActivity'), errorMessage(error));
         }
     }
 
@@ -36,7 +43,7 @@ class Controller{
                       if(!activity.rows.length) return jsonFormatter.success(res, 'empty');
                       return jsonFormatter.success(res, 'Activities', activity.rowCount, activity.rows);
                   }catch(error){
-                      console.log(error)
+                      return log(error('Error from : src/controllers/activityController.js - Getactivities'), errorMessage(error));
                   }
               }})
     }
@@ -58,7 +65,7 @@ class Controller{
                       const readActvity = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'activity read', readActvity.rowCount, readActvity.rows);
                   }catch(e){
-                      console.error(e)
+                     return log(error('Error from : src/controllers/readActvity.js - Getactivities'), errorMessage(error));
                   }
               }})
     }

@@ -1,9 +1,16 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import chalk from 'chalk';
 import jsonFormatter from '../helpers/jsonFormat';
 import pool from '../models/index';
 import { uuid } from 'uuidv4';
 dotenv.config();
+
+const log = console.log;
+const error = chalk.bold.red.inverse.bgWhite;
+const errorMessage = chalk.white.bgGrey;
+const success = chalk.bold.black.bgGreen;
+const successMessage = chalk.green;
 
 class Controller{
     // you need a special pin to unlock this
@@ -27,8 +34,8 @@ class Controller{
                       const value = [id, title, category, picture, date, time, story]
                       const newBlog = await pool.query(query, value);
                       return jsonFormatter.success(res, 'blog posted', newBlog.rowCount, newBlog.rows, 201);
-                  }catch(error){
-                      console.error(error)
+                  }catch(err){
+                    log(error('Error from : src/contollers/blogController.js - addBlog'), errorMessage(err));
                   }
               }})
     }
@@ -39,8 +46,8 @@ class Controller{
             const blog = await pool.query(query);
             if(!blog.rows.length) return jsonFormatter.success(res, 'empty');
             return jsonFormatter.success(res, 'All blog', blog.rowCount, blog.rows);
-        }catch(error){
-            console.log(error)
+        }catch(err){
+            log(error('Error from : src/contollers/blogController.js - GetBlog'), errorMessage(err));
         }
     }
 
@@ -68,7 +75,7 @@ class Controller{
                       const newBlog = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'blog updated', newBlog.rowCount, newBlog.rows);
                   }catch(e){
-                      console.error(e)
+                    log(error('Error from : src/contollers/blogController.js - updateBlog'), errorMessage(e));
                   }
               }})
     }
@@ -86,7 +93,7 @@ class Controller{
                       if(!project.rowCount) return jsonFormatter.error(res, 'blog not found', 404)
                       return jsonFormatter.success(res, 'blog deleted');
                   }catch(e){
-                      console.error(e)
+                    log(error('Error from : src/contollers/blogController.js - deleteBlog'), errorMessage(e));
                   }
               }})
 
