@@ -30,7 +30,7 @@ class Controller{
                       return jsonFormatter.error(res, 'All fields are required !', 400);
                   }
                   try {
-                      const query = `INSERT INTO blog(id, title, category, picture, date, time, story, timestamp) VALUES($1, $2, $3, $4, $5, $6, $7 CURRENT_TIMESTAMP) RETURNING *`
+                      const query = `INSERT INTO blog(id, title, category, picture, date, time, story, timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP) RETURNING *`
                       const value = [id, title, category, picture, date, time, story]
                       const newBlog = await pool.query(query, value);
                       return jsonFormatter.success(res, 'blog posted', newBlog.rowCount, newBlog.rows, 201);
@@ -50,6 +50,20 @@ class Controller{
             log(error('Error from : src/contollers/blogController.js - GetBlog'), errorMessage(err));
         }
     }
+
+        //this is an open route and it gets a single blog
+        static async GetABlog (req, res){
+            const BlogID = req.params.blogId;
+            try {
+                const query = `SELECT * from blog WHERE id=$1`
+                const value = [BlogID]
+                const blog = await pool.query(query, value);
+                if(!blog.rows.length) return jsonFormatter.error(res, 'no blog associated with this ID', 404);
+                return jsonFormatter.success(res, 'blog', blog.rowCount, blog.rows);
+            }catch(err){
+                log(error('Error from : src/contollers/blogController.js - GetABlog'), errorMessage(err));
+            }
+        }
 
     static async updateBlog(req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
