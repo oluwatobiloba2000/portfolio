@@ -35,6 +35,18 @@ class Controller{
         }
     }
 
+    static async GetViews (req, res){
+        const blogId = req.params.blogId;
+            try {
+                      const query = `SELECT COUNT(*) from blogViews WHERE blogId=$1`
+                      const value = [blogId]
+                      const blogViews = await pool.query(query, value);
+                      if(blogViews.rows[0].count <= 0) return jsonFormatter.success(res, 'no view', blogViews.rows[0].count);
+                      return jsonFormatter.success(res, 'Blog views', blogViews.rows[0].count);
+                  }catch(err){
+                      return log(error('Error from : src/controllers/blogViewsController.js - GetViews'), errorMessage(err));
+                  }
+    }
 }
 
 export default Controller;
