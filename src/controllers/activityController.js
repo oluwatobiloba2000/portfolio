@@ -27,8 +27,8 @@ class Controller{
             const value = [id, body, timeRecieved, dateRecieved]
             const newActvity = await pool.query(query, value);
             return jsonFormatter.success(res, 'activity posted', newActvity.rowCount, newActvity.rows, 201);
-        }catch(error){
-            return log(error('Error from : src/contollers/activityController.js - addAnActivity'), errorMessage(error));
+        }catch(err){
+            return log(error('Error from : src/contollers/activityController.js - addAnActivity'), errorMessage(err));
         }
     }
 
@@ -42,8 +42,8 @@ class Controller{
                       const activity = await pool.query(query);
                       if(!activity.rows.length) return jsonFormatter.success(res, 'empty');
                       return jsonFormatter.success(res, 'Activities', activity.rowCount, activity.rows);
-                  }catch(error){
-                      return log(error('Error from : src/controllers/activityController.js - Getactivities'), errorMessage(error));
+                  }catch(err){
+                      return log(error('Error from : src/controllers/activityController.js - Getactivities'), errorMessage(err));
                   }
               }})
     }
@@ -65,7 +65,7 @@ class Controller{
                       const readActvity = await pool.query(updatequery, updateValues);
                       return jsonFormatter.success(res, 'activity read', readActvity.rowCount, readActvity.rows);
                   }catch(e){
-                     return log(error('Error from : src/controllers/readActvity.js - Getactivities'), errorMessage(error));
+                     return log(error('Error from : src/controllers/readActvity.js - Getactivities'), errorMessage(e));
                   }
               }})
     }
