@@ -46,7 +46,8 @@ const profileTable = async () => {
         await pool.query(queryProfile);
         log(`${chalk.keyword('orange')('profile table created')}`);
     } catch (e) {
-        log(error(`Error From src/models/index.js - profileTable`), errorMessage({e}))
+        log(error(`Error From src/models/index.js - profileTable`))
+        console.log(e)
     }
 }
 
@@ -62,14 +63,15 @@ const skillsTable = async () => {
         await pool.query(querySkills);
         log(`${chalk.keyword('orange')('skills table created')}`);
     } catch (e) {
-        log(error(`Error From src/models/index.js - skillsTable`), errorMessage({e}))
+        log(error(`Error From src/models/index.js - skillsTable`))
+         console.log(e)
     }
 }
 
 const blogTable = async () => {
     const queryBlog = ` CREATE TABLE IF NOT EXISTS
     blog(
-        id VARCHAR NOT NULL,
+        id VARCHAR NOT NULL UNIQUE,
         title VARCHAR NOT NULL,
         category VARCHAR NOT NULL,
         picture VARCHAR NOT NULL,
@@ -82,7 +84,8 @@ const blogTable = async () => {
         await pool.query(queryBlog);
         log(`${chalk.keyword('orange')('blog table created')}`);
     } catch (e) {
-        log(error(`Error From src/models/index.js - blogTable`), errorMessage({e}))
+        log(error(`Error From src/models/index.js - blogTable`))
+        console.log(e)
     }
 }
 
@@ -106,7 +109,8 @@ const projectTable = async () => {
         await pool.query(queryProject);
         log(`${chalk.keyword('orange')('project table created')}`);
     } catch (e) {
-        log(error(`Error From src/models/index.js - projectTable`), errorMessage({e}))
+        log(error(`Error From src/models/index.js - projectTable`))
+        console.log(e)
     }
 }
 
@@ -128,7 +132,8 @@ const contactMeTable = async () => {
                     await pool.query(queryContactMe);
         log(`${chalk.keyword('orange')('contact me table created')}`);
     } catch (e) {
-        log(error(`Error From src/models/index.js - contactMeTable`), errorMessage({e}))
+        log(error(`Error From src/models/index.js - contactMeTable`))
+        console.log(e)
     }
 }
 
@@ -144,7 +149,8 @@ const userTable = async () => {
         await pool.query(queryUserTable);
         log(`${chalk.keyword('orange')('user table created')}`);
     } catch (e) {
-        log(error(`Error From src/models/index.js - userTable`), errorMessage({e}))
+        log(error(`Error From src/models/index.js - userTable`))
+        console.log(e)
     }
 }
 
@@ -162,7 +168,8 @@ const visitorTable = async () => {
         await pool.query(queryVisitorTable);
         log(`${chalk.keyword('orange')('visitor table created')}`);
     } catch (e) {
-        log(error(`Error From src/models/index.js - visitorTable`), errorMessage({e}))
+        log(error(`Error From src/models/index.js - visitorTable`))
+        console.log(e)
     }
 }
 
@@ -179,21 +186,38 @@ const activityTable = async () => {
         await pool.query(queryActivityTable);
         log(`${chalk.keyword('orange')('activity table created')}`);
     } catch (e) {
-        log(error(`Error From src/models/index.js - activityTable`), errorMessage({e}))
+        log(error(`Error From src/models/index.js - activityTable`))
+        console.log(e)
     }
 }
+
+const blogViewsTable = async () => {
+    const queryBlogViews = ` CREATE TABLE IF NOT EXISTS
+    blogviews(
+                id VARCHAR NOT NULL,
+                blogId VARCHAR NOT NULL,
+                ip VARCHAR NOT NULL,
+                FOREIGN KEY(blogId) REFERENCES blog(id) ON DELETE CASCADE ON UPDATE CASCADE)`
+    try {
+        await pool.query(queryBlogViews);
+        log(`${chalk.keyword('orange')('blogViews table created')}`);
+    } catch (e) {
+        log(error(`Error From src/models/index.js - blogViewsTable`))
+        console.log(e)
+    }
+}
+
 const dropTable = async () => {
     try {
-        const query = "DROP TABLE IF EXISTS activity";
+        const query = `DROP TABLE IF EXISTS blog`;
         await pool.query(query);
-        console.log("Table dropped");
+        log(`${chalk.keyword('red')(`table dropped`)}`);
       } catch (e) {
           pool.end();
         }
 }
 
 profileTable()
-// dropTable()
 skillsTable()
 blogTable()
 projectTable()
@@ -201,7 +225,8 @@ contactMeTable()
 userTable()
 visitorTable()
 activityTable()
+blogViewsTable()
+// dropTable()
 
 
-log(chalk.keyword('orange')('Yay for orange colored text!'));
 export default pool;
