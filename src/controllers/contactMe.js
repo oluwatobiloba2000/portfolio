@@ -229,14 +229,14 @@ class Controller {
                       const query = `SELECT * FROM contactMe WHERE id=$1`
                       const value = [id];
                       const formerMessage = await pool.query(query, value);
-                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404)
+                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404, undefined, 'not found')
                       const formerMessageToUpdate = formerMessage.rows[0];
-                     if (formerMessageToUpdate.read == 'true') return jsonFormatter.error(res, 'message has been marked as read', 400)
+                     if (formerMessageToUpdate.read == 'true') return jsonFormatter.error(res, 'message has been marked as read', 400, undefined, 'invalid')
                       const MarkAsReadMessageRequest = 'true';
                       const updatequery = `UPDATE contactMe SET read=$1 WHERE id=$2 RETURNING *`
                       const updateValues = [MarkAsReadMessageRequest, id];
                       const newMessageRead = await pool.query(updatequery, updateValues);
-                      return jsonFormatter.success(res, 'message marked as read', newMessageRead.rowCount, newMessageRead.rows);
+                      return jsonFormatter.success(res, 'message marked as read', newMessageRead.rowCount, newMessageRead.rows, undefined, 'read');
                   } catch (err) {
                     log(error('Error from : src/contollers/contactMe.js - readMessage'), errorMessage(err));
                   }
