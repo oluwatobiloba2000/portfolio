@@ -117,7 +117,31 @@ class Controller{
               }})
             }
 
- 
+            static async updateVisitorName(req, res){
+              jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
+                  if(err){
+                      return res.status(403).json(err)
+                    }else{
+                        const email = req.query.email;
+                        const username = req.body.username;
+                        const avatar = req.body.avatar;
+                        try{
+                            const query = `SELECT * FROM visitorTable WHERE email=$1`
+                            const value = [email];
+                            const formerVisitorProfile = await pool.query(query, value);
+                            if(!formerVisitorProfile.rows.length) return jsonFormatter.error(res, 'Vistor not found', 404, undefined, 'not found')
+                            const formerVisitorProfileToUpdate = formerVisitorProfile.rows[0];
+                            const usernameToUpdate = username  || formerVisitorProfileToUpdate.username;
+                            const avatarToUpdate = avatar || formerVisitorProfileToUpdate.avatar;
+                            const updatequery = `UPDATE visitorTable SET username=$1, avatar=$2 WHERE email=$3 RETURNING *`
+                            const updateValues = [ usernameToUpdate ,avatarToUpdate, email];
+                            const newProfile = await pool.query(updatequery, updateValues);
+                            return jsonFormatter.success(res, 'visitor profile updated', newProfile.rowCount, newProfile.rows, undefined, 'updated');
+                        }catch(err){
+                          log(error('Error from : src/contollers/VisitorController.js - updateVisitor'), errorMessage(err));
+                        }
+                    }})
+          }
 }
 
 export default Controller;
