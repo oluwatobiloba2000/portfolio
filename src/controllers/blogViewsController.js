@@ -19,17 +19,17 @@ class Controller{
         const ip = req.body.IP;
 
         if(!id  || !blogId || !ip){
-            return jsonFormatter.error(res, 'All fields are required !', 400);
+            return jsonFormatter.error(res, 'All fields are required !', 400, undefined, 'invalid');
         }
         try {
             const query = `SELECT * from blogviews WHERE blogId=$1 AND ip=$2`;
             const blogIdValue = [blogId, ip]
             const IPview = await pool.query(query, blogIdValue);
-            if(IPview.rows.length) return jsonFormatter.success(res, 'IP already exist for post');
+            if(IPview.rows.length) return jsonFormatter.success(res, 'IP already exist for post', undefined, undefined, undefined, 'invalid');
             const queryAddIP = `INSERT INTO blogviews(id, blogId, ip) VALUES($1, $2, $3) RETURNING *`
             const value = [id, blogId, ip]
             const newAddedIP = await pool.query(queryAddIP, value);
-            return jsonFormatter.success(res, 'IP added to post view', newAddedIP.rowCount, '', 201);
+            return jsonFormatter.success(res, 'IP added to post view', newAddedIP.rowCount, undefined, 201, 'posted');
         }catch(err){
             return log(error('Error from : src/contollers/blogViewsController.js - addBlogView'), errorMessage(err));
         }
@@ -42,7 +42,7 @@ class Controller{
                       const value = [blogId]
                       const blogViews = await pool.query(query, value);
                       if(blogViews.rows[0].count <= 0) return jsonFormatter.success(res, 'no view', blogViews.rows[0].count);
-                      return jsonFormatter.success(res, 'Blog views', blogViews.rows[0].count);
+                      return jsonFormatter.success(res, 'Blog views', blogViews.rows[0].count, undefined,undefined, 'all');
                   }catch(err){
                       return log(error('Error from : src/controllers/blogViewsController.js - GetViews'), errorMessage(err));
                   }
