@@ -24,25 +24,28 @@ class Controller {
         const senderEmailAddress = req.body.senderEmailAddress;
         const timeReceived = req.body.timeReceived;
         if (!id || !name || !message || !subject || !senderEmailAddress || !timeReceived) {
-            return jsonFormatter.error(res, 'All fields are required !', 400);
+            return jsonFormatter.error(res, 'All fields are required !', 400, undefined, 'bad request');
         }
         try {
             SendEmailMessage(res, senderEmailAddress , process.env.MY_EMAIL_ADDRESS, 'Anani Oluwatobiloba portfolio', `Dear ${name}, Your message has been recieved and you will get a reply soon`);
-            const query = `INSERT INTO contactMe(id, name, message, subject, senderEmailAddress, timeReceived, timestamp) VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP) RETURNING *`
+            const query = `INSERT INTO contactMe(id, name, message, subject, senderEmailAddress, timeReceived, timestamp) VALUES($1, $2, $3, $4, $5,$6, CURRENT_TIMESTAMP) RETURNING *`
             const value = [id, name, message, subject, senderEmailAddress, timeReceived]
             const newMessage = await pool.query(query, value);
-            return jsonFormatter.success(res, 'message sent', newMessage.rowCount, newMessage.rows, 201);
+            return jsonFormatter.success(res, 'message sent', newMessage.rowCount, newMessage.rows, 201, 'sent');
         } catch (err) {
             log(error('Error from : src/contollers/contactMe.js - sendMessage'), errorMessage(err));
         }
     }
 
     static async GetMessage(req, res) {
+        const start = parseInt(req.query.start);
+        const count = parseInt(req.query.count);
         try {
-            const query = `SELECT * from contactMe WHERE trash = 'false' ORDER BY TIMESTAMP`
-            const messages = await pool.query(query);
+            const query = `SELECT * from contactMe WHERE trash = 'false' ORDER BY TIMESTAMP OFFSET($1) LIMIT($2)`
+            const values = [start, count]
+            const messages = await pool.query(query, values);
             if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
-            return jsonFormatter.success(res, 'All messages', messages.rowCount, messages.rows);
+            return jsonFormatter.success(res, 'All messages', messages.rowCount, messages.rows, undefined, 'all');
         } catch (err) {
             log(error('Error from : src/contollers/contactMe.js - Getmessage'), errorMessage(err));
         }
@@ -54,6 +57,8 @@ class Controller {
     // you need special admin key to pass here
     static FilterMessages(req, res) {
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            const start = parseInt(req.query.start);
+            const count = parseInt(req.query.count);
             if(err){
               return res.status(403).json(err)
             }else{
@@ -65,22 +70,22 @@ class Controller {
                 if (filterMessage == 'show read messages' || filterMessage == 'show unread messages') {
                     let filterMessageRequest = filterMessage == "show read messages" ? "true" : "false";
                     try {
-                        const query = `SELECT * from contactMe WHERE read=$1 ORDER BY TIMESTAMP`
-                        const value = [filterMessageRequest]
+                        const query = `SELECT * from contactMe WHERE read=$1 ORDER BY TIMESTAMP OFFSET($2) LIMIT($3)`
+                        const value = [filterMessageRequest, start, count]
                         const messages = await pool.query(query, value);
                         if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
-                        return jsonFormatter.success(res, filterMessage == 'true' ? 'Read messages' : 'Unread messages', messages.rowCount, messages.rows);
+                        return jsonFormatter.success(res, filterMessage == 'true' ? 'Read messages' : 'Unread messages', messages.rowCount, messages.rows, 'all');
                     } catch (err) {
                         log(error('Error from : src/contollers/contactMe.js - filterMessage'), errorMessage(err));
                     }
                 } else if(filterMessage == 'show trash messages') {
                    const trashMessages = 'true';
                    try{
-                       const query = `SELECT * from contactMe WHERE trash=$1 ORDER BY TIMESTAMP`
-                       const value = [trashMessages]
+                       const query = `SELECT * from contactMe WHERE trash=$1 ORDER BY TIMESTAMP OFFSET($2) LIMIT($3)`
+                       const value = [trashMessages, start, count]
                        const messages = await pool.query(query, value);
                        if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
-                       return jsonFormatter.success(res, 'trash messages', messages.rowCount, messages.rows);
+                       return jsonFormatter.success(res, 'trash messages', messages.rowCount, messages.rows, undefined, 'all');
                    }catch(err){
                     log(error('Error from : src/contollers/contactMe.js - sendMessage'), errorMessage(err));
                    }
@@ -91,12 +96,12 @@ class Controller {
                         const value = [filterMessageRequest]
                         const messages = await pool.query(query, value);
                         if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
-                        return jsonFormatter.success(res, filterMessage == 'true' ? 'starred messages' : 'unstarred messages', messages.rowCount, messages.rows);
+                        return jsonFormatter.success(res, filterMessage == 'true' ? 'starred messages' : 'unstarred messages', messages.rowCount, messages.rows, undefined, 'all');
                     } catch (errr) {
                         log(error('Error from : src/contollers/contactMe.js - sendMessage'), errorMessage(err));
                     }
                 }else {
-                    return jsonFormatter.error(res, 'field needed are "show read messages" or "show unread messages" or "show trash messages" or "show starred messages" or "show unstarred messages"', 400);
+                    return jsonFormatter.error(res, 'field needed are "show read messages" or "show unread messages" or "show trash messages" or "show starred messages" or "show unstarred messages"', 400, undefined, 'invalid');
                 }
             }
         })
@@ -113,14 +118,14 @@ class Controller {
             const value = [id]
             const messages = await pool.query(query, value);
             if (!messages.rowCount) {
-                return jsonFormatter.error(res, 'message not found', 404)
+                return jsonFormatter.error(res, 'message not found', 404, undefined, 'not found')
             } else if (messages.rows[0].trash == 'false') {
-                return jsonFormatter.success(res, 'message must be trashed first before it can be deleted');
+                return jsonFormatter.success(res, 'message must be trashed first before it can be deleted', undefined, undefined, undefined, 'invalid');
             } else {
                 const query = `DELETE from contactMe WHERE id=$1`
                 const value = [id];
                 const messageToDelete = await pool.query(query, value);
-                return jsonFormatter.success(res, 'message deleted')
+                return jsonFormatter.success(res, 'message deleted', undefined, undefined, undefined, 'deleted')
             }
         } catch (err) {
             log(error('Error from : src/contollers/contactMe.js - deleteMessage'), errorMessage(err));
@@ -139,14 +144,14 @@ class Controller {
                       const query = `SELECT * FROM contactMe WHERE id=$1`
                       const value = [id];
                       const formerMessage = await pool.query(query, value);
-                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404)
+                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404, undefined, 'not found')
                       const formerMessageToUpdate = formerMessage.rows[0];
-                      if (formerMessageToUpdate.star == 'true') return jsonFormatter.error(res, 'message has been starred', 400)
+                      if (formerMessageToUpdate.star == 'true') return jsonFormatter.error(res, 'message has been starred', 400, undefined, 'starred')
                       const starMessageRequest = 'true';
                       const updatequery = `UPDATE contactMe SET star=$1 WHERE id=$2 RETURNING *`
                       const updateValues = [starMessageRequest, id];
                       const newStarredMessage = await pool.query(updatequery, updateValues);
-                      return jsonFormatter.success(res, 'message starred', newStarredMessage.rowCount, newStarredMessage.rows);
+                      return jsonFormatter.success(res, 'message starred', newStarredMessage.rowCount, newStarredMessage.rows, undefined, 'starred');
                   } catch (err) {
                     log(error('Error from : src/contollers/contactMe.js - starMessage'), errorMessage(err));
                   }
@@ -166,14 +171,14 @@ class Controller {
                       const query = `SELECT * FROM contactMe WHERE id=$1`
                       const value = [id];
                       const formerMessage = await pool.query(query, value);
-                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404)
+                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404, undefined, 'not found')
                       const formerMessageToUpdate = formerMessage.rows[0];
-                      if (formerMessageToUpdate.star == 'false') return jsonFormatter.error(res, 'message has been unstarred', 400)
+                      if (formerMessageToUpdate.star == 'false') return jsonFormatter.error(res, 'message has been unstarred', 400, undefined, 'unstarred')
                       const starMessageRequest = 'false';
                       const updatequery = `UPDATE contactMe SET star=$1 WHERE id=$2 RETURNING *`
                       const updateValues = [starMessageRequest, id];
                       const newStarredMessage = await pool.query(updatequery, updateValues);
-                      return jsonFormatter.success(res, 'message unstarred', newStarredMessage.rowCount, newStarredMessage.rows);
+                      return jsonFormatter.success(res, 'message unstarred', newStarredMessage.rowCount, newStarredMessage.rows, undefined, 'unstarred');
                   } catch (err) {
                     log(error('Error from : src/contollers/contactMe.js - unstarMessage'), errorMessage(err));
                   }
@@ -196,16 +201,16 @@ class Controller {
                       const query = `SELECT * FROM contactMe WHERE id=$1`
                       const value = [id];
                       const formerMessage = await pool.query(query, value);
-                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404)
+                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404, undefined, 'not found')
                       const formerMessageToUpdate = formerMessage.rows[0];
-                      if (formerMessageToUpdate.trash == 'true') return jsonFormatter.error(res, 'message has been trashed permanently', 400)
+                      if (formerMessageToUpdate.trash == 'true') return jsonFormatter.error(res, 'message has been trashed permanently', 400, undefined, 'invalid')
                       const timeTrashed = req.body.timetrashed;
-                      if(!timeTrashed) return jsonFormatter.error(res, 'time is needed to passed to the body', 400)
+                      if(!timeTrashed) return jsonFormatter.error(res, 'time is needed to passed to the body', 400, undefined, 'invalid')
                       const trashMessageRequest = 'true';
                       const updatequery = `UPDATE contactMe SET trash=$1, timeTrashed=$2 WHERE id=$3 RETURNING *`
                       const updateValues = [trashMessageRequest, timeTrashed, id];
                       const newTrashedMessage = await pool.query(updatequery, updateValues);
-                      return jsonFormatter.success(res, 'message trashed', newTrashedMessage.rowCount, newTrashedMessage.rows);
+                      return jsonFormatter.success(res, 'message trashed', newTrashedMessage.rowCount, newTrashedMessage.rows, undefined, 'trashed');
                   } catch (err) {
                     log(error('Error from : src/contollers/contactMe.js - trashMessage'), errorMessage(err));
                   }
