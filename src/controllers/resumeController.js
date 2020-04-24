@@ -79,7 +79,25 @@ class Controller{
                   }
               }})
     }
- 
+    static async deleteResume (req, res){
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.status(403).json(err)
+              }else{
+                  const id = req.params.id;
+
+                  try{
+                      const query = `DELETE FROM resume WHERE id=$1`
+                      const value = [id];
+                      const resume = await pool.query(query, value);
+                      if(!resume.rowCount) return jsonFormatter.error(res, 'resume not found', 404, undefined, 'not found')
+                      return jsonFormatter.success(res, 'resume deleted', undefined, undefined,undefined, 'deleted');
+                  }catch(e){
+                    log(error('Error from : src/contollers/resumeController.js - deleteResume'), errorMessage(e));
+                  }
+              }})
+
+    }
 }
 
 export default Controller;
