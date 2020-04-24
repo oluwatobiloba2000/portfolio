@@ -56,6 +56,54 @@ class Controller {
         }
     }
 
+   //To view draft and sent messages, 
+    //fill the body with the word
+    // "show draft messages" or "show sent messages"
+    // eg {"filterMessage": "show draft messages"}
+    // you need special admin key to pass here
+    static FilterAdminMessages(req, res) {
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+              return res.status(403).json(err)
+            }else{
+                // var d = new Date(authorizedData.iat * 1000).toString();
+                // var e = new Date(authorizedData.exp * 1000).toString();
+                // console.log('issued at', d)
+                // console.log('expried at', e)
+                const start = parseInt( req.query.start);
+                const count = parseInt(req.query.count);
+                let filterMessage = req.body.filterMessage;
+                
+                if (filterMessage == 'show draft messages') {
+                    let filterMessageRequest = filterMessage == "show draft messages" ? "true" : "false";
+                    try {
+                        const query = `SELECT * from adminMessage WHERE draft=$1 ORDER BY TIMESTAMP OFFSET($2) LIMIT($3) `
+                        const value = [filterMessageRequest, start, count]
+                        const messages = await pool.query(query, value);
+                        if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
+                        return jsonFormatter.success(res, 'draft messages', messages.rowCount, messages.rows, undefined, 'all');
+                    } catch (err) {
+                        log(error('Error from : src/contollers/adminMessage.js - filterMessage - showing draft messages'), errorMessage(err));
+                    }
+                } else if(filterMessage == 'show sent messages') {
+                   const sentMessagesRequest = 'true';
+                   try{
+                       const query = `SELECT * from adminMessage WHERE sent=$1 ORDER BY TIMESTAMP`
+                       const value = [sentMessagesRequest]
+                       const messages = await pool.query(query, value);
+                       if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
+                       return jsonFormatter.success(res, 'sent messages', messages.rowCount, messages.rows, undefined, 'all');
+                   }catch(err){
+                    log(error('Error from : src/contollers/adminMessage.js - filterMessage'), errorMessage(err));
+                   }
+                }else{
+                    return jsonFormatter.error(res, 'incorrect query string', undefined, 'invalid');
+                }
+            }
+        })
+    }
+   
+
 }
 
 export default Controller;
