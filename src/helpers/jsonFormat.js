@@ -1,28 +1,31 @@
 const jsonFormatter = {
-    error(res, description, code, data){
+    error(res, description, code, data, action){
         res.status(code);
         res.json({
             status : "error",
             description,
-            data
+            data,
+            action
         })
     },
 
-    success(res, description, rowCount, data, code){
+    success(res, description, rowCount, data, code, action){
         res.status(code ? code : 200);
         res.json({
             status : "success",
             description,
             rowCount,
-            data
+            data,
+            action
         })
     },
-    tokenFormat(res, description, token){
+    tokenFormat(res, description, token, email){
         res.status(200);
         res.json({
             status : "success",
             description,
-            token
+            token,
+            email
         })
     }
 }
