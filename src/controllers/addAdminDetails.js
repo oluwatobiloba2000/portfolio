@@ -48,7 +48,23 @@ class Controller{
               }})
     }
 
-    
+    static async GetLoginDetails (req, res){
+        jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.status(403).json(err)
+              }else{
+                  try {
+                      const query = `SELECT id, username, email from userDetails`;
+                      const LoginDetails = await pool.query(query);
+                      if(!LoginDetails.rows.length) return jsonFormatter.success(res, 'empty');
+                      return jsonFormatter.success(res, 'login details', LoginDetails.rowCount, LoginDetails.rows, undefined, 'all');
+                  }catch(err){
+                   return log(error('Error from : src/contollers/addLoginDetails.js - addLoginDetails'), errorMessage(err));
+                  }
+              }})
+    }
+
+ 
 }
 
 export default Controller;
