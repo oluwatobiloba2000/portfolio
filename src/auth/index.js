@@ -68,16 +68,16 @@ class Authentication{
         const email = req.body.email;
         const password = req.body.password;
         try{
-          if(!email || !password) return jsonFormatter.error(res,"All fields are required", 400);
+          if(!email || !password) return jsonFormatter.error(res,"All fields are required", 400, undefined, 'fields required');
         else{
             const checkPinQuery = `SELECT * FROM visitorTable WHERE email=$1`;
             const value  = [email]
             const returnedData = await pool.query(checkPinQuery, value);
-           if(!returnedData.rows[0]) return jsonFormatter.error(res, 'Username or password does not exist', 404)
-           if(returnedData.rows[0].used === 'true') return jsonFormatter.error(res, 'Your session has expired', 401)
+           if(!returnedData.rows[0]) return jsonFormatter.error(res, 'Username or password does not exist', 404, undefined, 'not exist')
+        //    if(returnedData.rows[0].used === 'true') return jsonFormatter.error(res, 'Your session has expired', 401, undefined, 'session expired')
         const match = await password ===  returnedData.rows[0].passphase
         if(match) {
-            if(returnedDataFromLogin.rows[0].used === 'true') return jsonFormatter.error(res, 'Your session has been used or expired', 401)
+            if(returnedDataFromLogin.rows[0].used === 'true') return jsonFormatter.error(res, 'Your session has been used or expired', 401, undefined, 'session expired')
             const checkPinQuery = `UPDATE visitorTable SET used='true', new='false' WHERE email=$1 AND PassPhase=$2`;
             const valueCheck  = [email, password]
             const returnedData = await pool.query(checkPinQuery, valueCheck);
@@ -93,7 +93,7 @@ class Authentication{
                     token
                 })
             }})
-            }else { return jsonFormatter.error(res, 'Incorrect Username or Password', 401)}}
+            }else { return jsonFormatter.error(res, 'Incorrect Username or Password', 401, undefined, 'incorrect username or password')}}
         }catch(err){
             log(error('Error from : src/auth/index.js - VisitorAuth'), errorMessage(err));
         }}
