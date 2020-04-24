@@ -52,7 +52,34 @@ class Controller{
         }
     }
 
-  
+    static async updateResume(req, res){
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.status(403).json(err)
+              }else{
+                  const id = req.params.id;
+                  try{
+                      const query = `SELECT * FROM resume WHERE id=$1`
+                      const value = [id];
+                      const formerResume = await pool.query(query, value);
+                      if(!formerResume.rows.length) return jsonFormatter.error(res, 'resume not found', 404, undefined, 'not found')
+                      const formerResumeToUpdate = formerResume.rows[0];
+                      const title = req.body.title || formerResumeToUpdate.title;
+                      const category = req.body.category  ||  formerResumeToUpdate.category;
+                      const startYear = req.body.startYear || formerResumeToUpdate.startYear;
+                      const endYear = req.body.endYear || formerResumeToUpdate.endYear;
+                      const location = req.body.location || formerResumeToUpdate.location;
+                      const body = req.body.body || formerResumeToUpdate.body;
+                      const updatequery = `UPDATE resume SET title=$1, category=$2, startYear=$3, endYear=$4, location=$5, body=$6 WHERE id=$7 RETURNING *`
+                      const updateValues = [title, category, startYear, endYear, location, body, id];
+                      const newresume = await pool.query(updatequery, updateValues);
+                      return jsonFormatter.success(res, 'resume updated', newresume.rowCount, newresume.rows, undefined, 'updated');
+                  }catch(e){
+                    log(error('Error from : src/contollers/resumeController.js - updateResume'), errorMessage(e));
+                  }
+              }})
+    }
+ 
 }
 
 export default Controller;
