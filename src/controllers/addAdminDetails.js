@@ -64,7 +64,40 @@ class Controller{
               }})
     }
 
- 
+    static async updateLoginDetails(req, res){
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.status(403).json(err)
+              }else{
+                  const id = req.body.id;
+                  const FormerPassword = req.body.FormerPassword;
+                  const NewPassword = req.body.NewPassword;
+                  try{
+                      const query = `SELECT * FROM userDetails WHERE id=$1`
+                      const value = [id];
+                      const formerLoginDetails = await pool.query(query, value);
+                      if(!formerLoginDetails.rows.length) return jsonFormatter.error(res, 'profile not found', 404, undefined, 'not found')
+          
+                       const match = await bcrypt.compare(FormerPassword, formerLoginDetails.rows[0].password);
+                       if(match){
+                           const username = req.body.username  || formerLoginDetails.rows[0].username;
+                              //  hash the incoming password
+                              const salt = await bcrypt.genSalt(10);
+                              const hashedNewPassword = await bcrypt.hash(NewPassword, salt)
+                          SendNotificationEmail(res, process.env.MY_EMAIL_ADDRESS, 'ananioluwatobiloba2000@gmail.com', 'ALERT ! Personal details changed', `You just changed your details`)
+                           const updatequery = `UPDATE userDetails SET password=$1, username=$2 WHERE id=$3 RETURNING *`
+                           const updateValues = [hashedNewPassword, username, id];
+                           const newLoginDetails = await pool.query(updatequery, updateValues);
+                           return jsonFormatter.success(res, 'Login details updated', newLoginDetails.rowCount, newLoginDetails.rows , undefined, 'updated');
+          
+                       }else{
+                           return jsonFormatter.error(res, 'password does not match');
+                       }
+                  }catch(e){
+                  return  log(error('Error from : src/contollers/addLoginDetails.js - addLoginDetails'), errorMessage(e));
+                  }
+              }})
+    }
 }
 
 export default Controller;
