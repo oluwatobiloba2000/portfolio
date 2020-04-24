@@ -158,11 +158,14 @@ const visitorTable = async () => {
     const queryVisitorTable = ` CREATE TABLE IF NOT EXISTS
     visitorTable(
                 id VARCHAR NOT NULL,
+                avatar VARCHAR,
+                gender VARCHAR,
                 email VARCHAR NOT NULL,
                 username VARCHAR,
                 PassPhase VARCHAR NOT NULL,
                 timeCreated VARCHAR,
                 timestamp TIMESTAMP,
+                new VARCHAR DEFAULT 'true',
                 used VARCHAR DEFAULT 'false')`
     try {
         await pool.query(queryVisitorTable);
@@ -207,9 +210,33 @@ const blogViewsTable = async () => {
     }
 }
 
+const adminMessageTable = async () => {
+    const queryBlogViews = ` CREATE TABLE IF NOT EXISTS
+    adminMessage(
+        messageId VARCHAR NOT NULL,
+        sender VARCHAR,
+        reciever VARCHAR,
+        subject VARCHAR,
+        time VARCHAR NOT NULL,
+        date VARCHAR NOT NULL,
+        message VARCHAR NOT NULL,
+        draft VARCHAR DEFAULT 'false',
+        sent VARCHAR DEFAULT 'false',
+        timestamp TIMESTAMP)`
+    try {
+        await pool.query(queryBlogViews);
+        log(`${chalk.keyword('orange')('adminMessage table created')}`);
+    } catch (e) {
+        log(error(`Error From src/models/index.js - adminMessageTable`))
+        console.log(e)
+    }
+}
+
+
+
 const dropTable = async () => {
     try {
-        const query = `DROP TABLE IF EXISTS blog`;
+        const query = `DROP TABLE IF EXISTS visitorTable`;
         await pool.query(query);
         log(`${chalk.keyword('red')(`table dropped`)}`);
       } catch (e) {
@@ -226,6 +253,8 @@ userTable()
 visitorTable()
 activityTable()
 blogViewsTable()
+adminMessageTable()
+pinBoardTable()
 // dropTable()
 
 
