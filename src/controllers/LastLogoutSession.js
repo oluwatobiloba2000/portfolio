@@ -19,13 +19,13 @@ class Controller{
             const query = `SELECT * FROM profile WHERE id=$1`
             const value = [id];
             const formerProfile = await pool.query(query, value);
-            if(!formerProfile.rows.length) return jsonFormatter.error(res, 'profile not found', 404)
+            if(!formerProfile.rows.length) return jsonFormatter.error(res, 'profile not found', 404, undefined, 'not found')
             const formerProfileToUpdate = formerProfile.rows[0];
             const lastLogout = req.body.lastLogout   || formerProfileToUpdate.lastLogout;
             const updatequery = `UPDATE profile SET lastLogout=$1 WHERE id=$2 RETURNING lastLogout`
             const updateValues = [lastLogout, id];
             const newLogoutSession = await pool.query(updatequery, updateValues);
-            return jsonFormatter.success(res, 'Logout saved', newLogoutSession.rowCount,newLogoutSession.rows);
+            return jsonFormatter.success(res, 'Logout saved', newLogoutSession.rowCount,newLogoutSession.rows, undefined, 'updated');
         }catch(err){
             log(error('Error from : src/contollers/LastLogoutSession.js - updateLogoutSession'), errorMessage(err));
         }
