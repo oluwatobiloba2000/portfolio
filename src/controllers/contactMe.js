@@ -255,14 +255,14 @@ class Controller {
                       const query = `SELECT * FROM contactMe WHERE id=$1`
                       const value = [id];
                       const formerMessage = await pool.query(query, value);
-                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404)
+                      if (!formerMessage.rows.length) return jsonFormatter.error(res, 'message not found', 404, undefined, 'not found')
                       const formerMessageToUpdate = formerMessage.rows[0];
-                      if (formerMessageToUpdate.read == 'false') return jsonFormatter.error(res, 'message has been marked as unread', 400)
+                      if (formerMessageToUpdate.read == 'false') return jsonFormatter.error(res, 'message has been marked as unread', 400,undefined, 'invalid')
                       const MarkAsReadUnMessageRequest = 'false'
                       const updatequery = `UPDATE contactMe SET read=$1 WHERE id=$2 RETURNING *`
                       const updateValues = [MarkAsReadUnMessageRequest, id];
                       const newMessageRead = await pool.query(updatequery, updateValues);
-                      return jsonFormatter.success(res, 'message marked as unread', newMessageRead.rowCount, newMessageRead.rows);
+                      return jsonFormatter.success(res, 'message marked as unread', newMessageRead.rowCount, newMessageRead.rows, undefined, 'unread');
                   } catch (err) {
                     log(error('Error from : src/contollers/contactMe.js - unreadMessage'), errorMessage(err));
                   }
