@@ -53,7 +53,21 @@ class Controller{
               }})
     }
 
-  
+    static async getPinboards (req, res){
+        const start = parseInt(req.query.start);
+        const count = parseInt(req.query.count);
+        try{
+            const query = `SELECT * FROM pinBoard ORDER BY TIMESTAMP OFFSET($1) LIMIT($2)`
+            const value = [start, count]
+            const pinBoard = await pool.query(query, value);
+            if(!pinBoard.rows.length) return jsonFormatter.success(res, 'empty');
+            return jsonFormatter.success(res, 'All pinBoard', pinBoard.rowCount, pinBoard.rows, undefined, 'all')
+        }catch(err){
+            log(error('Error from : src/contollers/pinBoardController.js - getPinboard'), errorMessage(err));
+        }
+    }
+
+
 }
 
 export default Controller;
