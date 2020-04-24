@@ -67,7 +67,31 @@ class Controller{
         }
     }
 
+    static async updatePinBoard (req, res){
+        jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.status(403).json(err)
+              }else{
+                  const id = req.params.id;
+                  try{
+                      const query = `SELECT * FROM pinBoard WHERE pinBoardId=$1`
+                      const value = [id];
+                      const formerPinboard = await pool.query(query, value);
+                      if(!formerPinboard.rows.length) return jsonFormatter.error(res, 'pin board not found', 404)
+                      const formerPinBoardToUpdate = formerPinboard.rows[0];
+                      const title = req.body.title || formerPinBoardToUpdate.title;
+                      const body = req.body.body || formerPinBoardToUpdate.body;
+                      const updatequery = `UPDATE pinBoard SET title=$1, body=$2 WHERE pinBoardId=$3 RETURNING *`
+                      const updateValues = [title, body, id];
+                      const newPinBoard = await pool.query(updatequery, updateValues);
+                      return jsonFormatter.success(res, 'pin board updated', newPinBoard.rowCount, newPinBoard.rows, 200, 'updated');
+                  }catch(err){
+                    log(error('Error from : src/contollers/projectController.js - updatePinBoard'), errorMessage(err));
+                  }
+              }})
+    }
 
+   
 }
 
 export default Controller;
