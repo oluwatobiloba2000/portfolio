@@ -232,6 +232,23 @@ const adminMessageTable = async () => {
     }
 }
 
+const pinBoardTable = async () => {
+    const queryPinBoard = ` CREATE TABLE IF NOT EXISTS
+    pinBoard(
+        pinBoardId VARCHAR NOT NULL,
+        title VARCHAR,
+        body VARCHAR,
+        dateTime VARCHAR,
+        timestamp TIMESTAMP)`
+    try {
+        await pool.query(queryPinBoard);
+        log(`${chalk.keyword('orange')('pin Board table created')}`);
+    } catch (e) {
+        log(error(`Error From src/models/index.js - pinBoardTable`))
+        console.log(e)
+    }
+}
+
 
 
 const dropTable = async () => {
