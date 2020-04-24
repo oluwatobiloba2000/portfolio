@@ -24,16 +24,16 @@ class Controller{
         const cvLink = req.body.cvLink;
         const dateLunched = req.body.dateLunched;
         if(!id || !name || !about || !profilePics || !backgroundPics || !birthday || !phoneNumber || !cvLink || !dateLunched){
-            return jsonFormatter.error(res, 'All fields are required !', 400);
+            return jsonFormatter.error(res, 'All fields are required !', 400, undefined, undefined, 'fields required');
         }
         try {
              const Profilequerycheck = `SELECT * from profile`
             const profile = await pool.query(Profilequerycheck);
-            if(profile.rows.length) return jsonFormatter.error(res, 'profile already exist and cannot be added', 400);
+            if(profile.rows.length) return jsonFormatter.error(res, 'profile already exist and cannot be added', 400, undefined, 'invalid');
             const query = `INSERT INTO profile(id, name, about, profilePics, backgroundPics, birthday, phoneNumber, cvLink, dateLunched) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`
             const value = [id, name, about, profilePics, backgroundPics, birthday, phoneNumber, cvLink, dateLunched]
             const newProfile = await pool.query(query, value);
-            return jsonFormatter.success(res, 'profile posted', newProfile.rowCount, newProfile.rows, 201);
+            return jsonFormatter.success(res, 'profile posted', newProfile.rowCount, newProfile.rows, 201, 'posted');
         }catch(err){
             log(error('Error from : src/contollers/profileController.js - addProfile'), errorMessage(err));
         }
@@ -44,7 +44,7 @@ class Controller{
             const query = `SELECT * from profile`
             const profile = await pool.query(query);
             if(!profile.rows.length) return jsonFormatter.success(res, 'empty');
-            return jsonFormatter.success(res, 'your profile', profile.rowCount, profile.rows);
+            return jsonFormatter.success(res, 'your profile', profile.rowCount, profile.rows, undefined, 'all');
         }catch(err){
             log(error('Error from : src/contollers/profileController.js - Getprofile'), errorMessage(err));
         }
@@ -61,7 +61,7 @@ class Controller{
                       const query = `SELECT * FROM profile WHERE id=$1`
                       const value = [id];
                       const formerProfile = await pool.query(query, value);
-                      if(!formerProfile.rows.length) return jsonFormatter.error(res, 'profile not found', 404)
+                      if(!formerProfile.rows.length) return jsonFormatter.error(res, 'profile not found', 404, 'not found')
                       const formerProfileToUpdate = formerProfile.rows[0];
                       const name = req.body.name   || formerProfileToUpdate.name;
                       const about = req.body.about  || formerProfileToUpdate.about;
@@ -74,7 +74,7 @@ class Controller{
                       const updatequery = `UPDATE profile SET name=$1, about=$2, profilePics=$3, backgroundPics=$4, birthday=$5, phoneNumber=$6, cvLink=$7, dateLunched=$8 WHERE id=$9 RETURNING *`
                       const updateValues = [name, about, profilePics, backgroundPics, birthday, phoneNumber, cvLink, dateLunched, id];
                       const newProfile = await pool.query(updatequery, updateValues);
-                      return jsonFormatter.success(res, 'profile updated', newProfile.rowCount, newProfile.rows);
+                      return jsonFormatter.success(res, 'profile updated', newProfile.rowCount, newProfile.rows, undefined, 'updated');
                   }catch(err){
                     log(error('Error from : src/contollers/profileController.js - updateProfile'), errorMessage(err));
                   }
