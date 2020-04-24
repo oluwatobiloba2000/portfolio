@@ -20,13 +20,13 @@ class Controller{
         const dateRecieved = req.body.dateRecieved;
 
         if(!id  || !body || !timeRecieved || !dateRecieved){
-            return jsonFormatter.error(res, 'All fields are required !', 400);
+            return jsonFormatter.error(res, 'All fields are required !', 400, 'bad request');
         }
         try {
             const query = `INSERT INTO activity(id, body, timeRecieved, dateRecieved, timestamp) VALUES($1, $2, $3, $4 ,CURRENT_TIMESTAMP) RETURNING *`
             const value = [id, body, timeRecieved, dateRecieved]
             const newActvity = await pool.query(query, value);
-            return jsonFormatter.success(res, 'activity posted', newActvity.rowCount, newActvity.rows, 201);
+            return jsonFormatter.success(res, 'activity posted', newActvity.rowCount, newActvity.rows, 201, 'posted');
         }catch(err){
             return log(error('Error from : src/contollers/activityController.js - addAnActivity'), errorMessage(err));
         }
@@ -34,14 +34,17 @@ class Controller{
 
     static async Getactivities (req, res){
         jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
-            if(err){
+            const start = parseInt(req.query.start);
+            const count = parseInt(req.query.count);
+           if(err){
                 return res.status(403).json(err)
-              }else{
+            }else{
                   try {
-                      const query = `SELECT * from activity`
-                      const activity = await pool.query(query);
+                      const query = `SELECT * FROM activity ORDER BY TIMESTAMP OFFSET($1) LIMIT($2)`
+                      const values = [start, count]
+                      const activity = await pool.query(query, values);
                       if(!activity.rows.length) return jsonFormatter.success(res, 'empty');
-                      return jsonFormatter.success(res, 'Activities', activity.rowCount, activity.rows);
+                      return jsonFormatter.success(res, 'Activities', activity.rowCount, activity.rows, undefined, 'all');
                   }catch(err){
                       return log(error('Error from : src/controllers/activityController.js - Getactivities'), errorMessage(err));
                   }
@@ -59,11 +62,11 @@ class Controller{
                       const query = `SELECT * FROM activity WHERE id=$1`
                       const value = [id];
                       const formerActivity = await pool.query(query, value);
-                      if(!formerActivity.rows.length) return jsonFormatter.error(res, 'activity not found', 404)
+                      if(!formerActivity.rows.length) return jsonFormatter.error(res, 'activity not found', 404, undefined, 'not found')
                       const updatequery = `UPDATE activity SET read='true' WHERE id=$1 RETURNING *`
                       const updateValues = [id];
                       const readActvity = await pool.query(updatequery, updateValues);
-                      return jsonFormatter.success(res, 'activity read', readActvity.rowCount, readActvity.rows);
+                      return jsonFormatter.success(res, 'activity read', readActvity.rowCount, readActvity.rows, undefined, 'read');
                   }catch(e){
                      return log(error('Error from : src/controllers/readActvity.js - Getactivities'), errorMessage(e));
                   }
