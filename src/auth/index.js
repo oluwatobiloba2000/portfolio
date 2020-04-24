@@ -18,12 +18,12 @@ class Authentication{
     const email = req.body.email;
     const password  = req.body.password;
     try{
-      if(!email || !password) return jsonFormatter.error(res, "Username and password are required", 401)
-      if(!(/[\w]+@[a-zA-Z]+\.[a-zA-Z]{2}/.test(email))) return jsonFormatter.error(res, 'invalid email', 401)
+      if(!email || !password) return jsonFormatter.error(res, "Username and password are required", 401, undefined, 'bad request')
+      if(!(/[\w]+@[a-zA-Z]+\.[a-zA-Z]{2}/.test(email))) return jsonFormatter.error(res, 'invalid email', 400, undefined, 'invalid')
         const checkEmailQuery = `SELECT * FROM userDetails WHERE email=$1`
         const value = [email];
         const returnedData = await pool.query(checkEmailQuery, value);
-      if(!returnedData.rows[0]) return jsonFormatter.error(res, 'incorrect email or password', 401, returnedData)
+      if(!returnedData.rows[0]) return jsonFormatter.error(res, 'admin email or password does not exist', 401, returnedData, 'not exist')
        const match = await bcrypt.compare(password, returnedData.rows[0].password);
       if(match) {
         jwt.sign({email, password} , process.env.EMAIL_AND_PASSWORD_KEY, {expiresIn : '2h'} , (err, token)=>{
@@ -31,11 +31,11 @@ class Authentication{
             return log(error('Error from : src/auth/index.js - logInAuthUser'), errorMessage(err));
         }else{
             log(success('success from : src/auth/index.js - logInAuthUser'), successMessage('Login admin success'));
-            return jsonFormatter.tokenFormat(res, 'Login Admin success', token)
+            return jsonFormatter.tokenFormat(res, 'admin', token, email)
         }})
     }
     else {
-        return jsonFormatter.error(res, 'incorrect email or password', 401)
+        return jsonFormatter.error(res, 'check if it is a visitor', 401, undefined, 'check if visitor')
     }
     }catch(err){
         log(error('Error from : src/auth/index.js - logInAuthUser'), errorMessage(err));
@@ -45,11 +45,11 @@ class Authentication{
     static async PinAuth(req ,res){
         const pin = req.body.pin;
         try{
-          if(!pin) return jsonFormatter.error(res,"Incorrect pin", 401);
+          if(!pin) return jsonFormatter.error(res,"field required", 401, undefined, 'field required');
         else{
             const checkPinQuery = `SELECT * FROM userDetails`
             const returnedData = await pool.query(checkPinQuery);
-        if(!returnedData.rows[0]) return jsonFormatter.error(res, 'could not get user', 404)
+        if(!returnedData.rows[0]) return jsonFormatter.error(res, 'could not get user', 404, undefined, 'not found')
         const match = await bcrypt.compare(pin,  returnedData.rows[0].specialpin);
         if(match) {
          jwt.sign({pin} , process.env.SPECIAL_PIN_KEY, {expiresIn : '1h'} , (err, token)=>{
@@ -58,7 +58,7 @@ class Authentication{
             }else{
                 return jsonFormatter.tokenFormat(res, 'pin token generated', token)
             }})
-            }else { return jsonFormatter.error(res, 'Incorrect pin', 401)}}
+            }else { return jsonFormatter.error(res, 'Incorrect pin', 401, undefined , 'invalid')}}
         }catch(err){
             log(error('Error from : src/auth/index.js - logInAuthUser'), errorMessage(err));
         }}
@@ -77,14 +77,21 @@ class Authentication{
            if(returnedData.rows[0].used === 'true') return jsonFormatter.error(res, 'Your session has expired', 401)
         const match = await password ===  returnedData.rows[0].passphase
         if(match) {
-            const checkPinQuery = `UPDATE visitorTable SET used='true' WHERE email=$1 AND PassPhase=$2`;
+            if(returnedDataFromLogin.rows[0].used === 'true') return jsonFormatter.error(res, 'Your session has been used or expired', 401)
+            const checkPinQuery = `UPDATE visitorTable SET used='true', new='false' WHERE email=$1 AND PassPhase=$2`;
             const valueCheck  = [email, password]
             const returnedData = await pool.query(checkPinQuery, valueCheck);
          jwt.sign({email, password} , process.env.EMAIL_AND_PASSWORD_KEY, {expiresIn : '600000'} , (err, token)=>{
             if(err){
                return log(error('Error from : src/auth/index.js - VisitorAuth'), errorMessage(err));
             }else{
-                return jsonFormatter.tokenFormat(res, `Vistor token generated for : ${email}`, token)
+                return res.status(200).json({
+                    description: 'visitor',
+                    email: returnedDataFromLogin.rows[0].email,
+                    gender: returnedDataFromLogin.rows[0].gender,
+                    username: returnedDataFromLogin.rows[0].username,
+                    token
+                })
             }})
             }else { return jsonFormatter.error(res, 'Incorrect Username or Password', 401)}}
         }catch(err){
