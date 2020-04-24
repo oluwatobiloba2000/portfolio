@@ -250,10 +250,29 @@ const pinBoardTable = async () => {
 }
 
 
+const resumeTable = async () => {
+    const queryResumeTable = ` CREATE TABLE IF NOT EXISTS
+    resume(
+        id VARCHAR NOT NULL,
+        title VARCHAR,
+        startYear VARCHAR,
+        endYear VARCHAR,
+        category VARCHAR,
+        timestamp VARCHAR NOT NULL,
+        location VARCHAR NOT NULL,
+        body VARCHAR NOT NULL)`
+    try {
+        await pool.query(queryResumeTable);
+        log(`${chalk.keyword('orange')('resume table created')}`);
+    } catch (e) {
+        log(error(`Error From src/models/index.js - resumeTable`))
+        console.log(e)
+    }
+}
 
 const dropTable = async () => {
     try {
-        const query = `DROP TABLE IF EXISTS visitorTable`;
+        const query = `DROP TABLE IF EXISTS resume`;
         await pool.query(query);
         log(`${chalk.keyword('red')(`table dropped`)}`);
       } catch (e) {
@@ -272,6 +291,7 @@ activityTable()
 blogViewsTable()
 adminMessageTable()
 pinBoardTable()
+resumeTable()
 // dropTable()
 
 
