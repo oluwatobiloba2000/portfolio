@@ -91,7 +91,24 @@ class Controller{
               }})
     }
 
-   
+    static async deleteProject (req, res){
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.status(403).json(err)
+              }else{
+                  const id = req.params.id;
+                  
+                  try{
+                      const query = `DELETE FROM pinBoard WHERE pinBoardId=$1`
+                      const value = [id];
+                      const project = await pool.query(query, value);
+                      if(!project.rowCount) return jsonFormatter.error(res, 'pin board not found', 404, undefined, 'not found')
+                      return jsonFormatter.success(res, 'pin board deleted', undefined, undefined, 200, 'deleted');
+                  }catch(err){
+                    log(error('Error from : src/contollers/projectController.js - deletePinBoard'), errorMessage(err));
+                  }
+              }})
+    }
 }
 
 export default Controller;
