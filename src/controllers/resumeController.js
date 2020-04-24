@@ -40,6 +40,18 @@ class Controller{
               }})
     }
 
+    static async getResume (req, res){
+        try{
+            const query = `SELECT * FROM resume ORDER BY TIMESTAMP`
+            const value = [start, count];
+            const resume = await pool.query(query, value);
+            if(!skills.rows.length) return jsonFormatter.success(res, 'empty');
+            return jsonFormatter.success(res, 'All resume', resume.rowCount, resume.rows, undefined, 'all')
+        }catch(err){
+            log(error('Error from : src/contollers/resumeController.js - getResume'), errorMessage(err));
+        }
+    }
+
   
 }
 
