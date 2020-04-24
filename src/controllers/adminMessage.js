@@ -104,6 +104,61 @@ class Controller {
     }
    
 
+    static async sendMessageAdmin(req, res) {
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+              return res.status(403).json(err)
+            }else{
+
+                const id = req.body.messageId;
+                const sender = process.env.MY_EMAIL_ADDRESS;
+                const reciever = req.body.reciever;
+                const subject = req.body.subject;
+                const time = req.body.time;
+                const date = req.body.date;
+                const message = req.body.message;
+
+                if (!message ||!sender || !reciever || !subject || !time || !date) {
+                  console.log(message, sender, reciever, subject, time, date)
+                    return jsonFormatter.error(res, 'All fields required!', 400, undefined, 'fields required');
+                }
+                try {
+                    if(id){
+                        const query = `SELECT * from adminMessage WHERE messageId=$1`
+                        const checkId = [id]
+                        const messages = await pool.query(query, checkId);
+                        if(!messages.rows.length){ return jsonFormatter.error(res, 'message not found', 404, undefined, 'not found')}
+                        const formerMessageToUpdate = messages.rows[0];
+                        if(formerMessageToUpdate.sent == 'true') return jsonFormatter.error(res, 'message that has been sent cannot be resent', 400, undefined, 'invalid')
+                        const sent = 'true';
+                        const draft = formerMessageToUpdate.draft == 'true' ? 'false' : 'false';
+                        const newReciever = req.body.reciever || formerMessageToUpdate.reciever;
+                        const newTime = req.body.time || formerMessageToUpdate.time;
+                        const newDate = req.body.date || formerMessageToUpdate.date;
+                        const newSubject = req.body.subject || formerMessageToUpdate.subject;
+                        const newMessage  = req.body.message || formerMessageToUpdate.message;
+                        SendEmailMessage(res, newReciever , process.env.MY_EMAIL_ADDRESS, newSubject, newMessage);
+        
+                        const updatequery = `UPDATE adminMessage SET reciever=$1, time=$2, date=$3, subject=$4, message=$5, sent=$6, draft=$7 timestamp=CURRENT_TIMESTAMP  WHERE messageId=$8 RETURNING *`
+                        const updateValues = [newReciever, newTime, newDate, newSubject, newMessage, sent,draft, id];
+                        const newSentMessage = await pool.query(updatequery, updateValues);
+                        return jsonFormatter.success(res, 'message sent', newSentMessage.rowCount, newSentMessage.rows, undefined, 'sent');
+                    }else{
+                        const NewID = uuid();
+                        const sent = 'true';
+                        SendEmailMessage(res, reciever , process.env.MY_EMAIL_ADDRESS, subject, message);
+                        const query = `INSERT INTO adminMessage(messageId, sender, reciever, time, date,subject, message, sent , timestamp) VALUES($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP) RETURNING *`
+                        const value = [NewID, sender, reciever, time, date, subject, message, sent]
+                        const newMessage = await pool.query(query, value);
+                        return jsonFormatter.success(res, 'message sent', newMessage.rowCount, newMessage.rows, 201, 'sent');
+                    
+                    }
+                    
+                } catch (err) {
+                    log(error('Error from : src/contollers/adminMessage.js - sendMessage'), errorMessage(err));
+                }
+            }})
+    }
 }
 
 export default Controller;
