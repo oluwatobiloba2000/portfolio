@@ -41,7 +41,18 @@ class Controller{
               }})
     }
     //this is an open route
+    static async getAdminTheme (req, res){
+        try {
+            const query = `SELECT * from AdminThemeTable`;
+            const AdminTheme = await pool.query(query);
+            if(!AdminTheme.rows.length) return jsonFormatter.success(res, 'empty', undefined, TimeMessage());
+            return jsonFormatter.success(res, 'Admin Theme', AdminTheme.rowCount, AdminTheme.rows, undefined, 'all');
+        }catch(err){
+            log(error('Error from : src/contollers/adminThemeController.js - getAdminTheme'), errorMessage(err));
+        }
+    }
 
+  
 }
 
 export default Controller;
