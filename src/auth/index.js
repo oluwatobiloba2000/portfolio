@@ -31,7 +31,7 @@ class Authentication{
             return log(error('Error from : src/auth/index.js - logInAuthUser'), errorMessage(err));
         }else{
             log(success('success from : src/auth/index.js - logInAuthUser'), successMessage('Login admin success'));
-            return jsonFormatter.tokenFormat(res, 'admin', token, email)
+            return jsonFormatter.tokenFormat(res, 'admin', token, email, returnedData.rows[0].id)
         }})
     }
     else {
@@ -72,25 +72,27 @@ class Authentication{
         else{
             const checkPinQuery = `SELECT * FROM visitorTable WHERE email=$1`;
             const value  = [email]
-            const returnedData = await pool.query(checkPinQuery, value);
-           if(!returnedData.rows[0]) return jsonFormatter.error(res, 'Username or password does not exist', 404, undefined, 'not exist')
-        //    if(returnedData.rows[0].used === 'true') return jsonFormatter.error(res, 'Your session has expired', 401, undefined, 'session expired')
-        const match = await password ===  returnedData.rows[0].passphase
+            const returnedDataFromLogin = await pool.query(checkPinQuery, value);
+           if(!returnedDataFromLogin.rows[0]) return jsonFormatter.error(res, 'Username or password does not exist', 404, undefined, 'not exist')
+        //    if(returnedDataFromLogin.rows[0].used === 'true') return jsonFormatter.error(res, 'Your session has expired', 401, undefined, 'session expired')
+           const match = await password ===  returnedDataFromLogin.rows[0].passphase
+        //    returnedDataFromLogin = returnedData
         if(match) {
             if(returnedDataFromLogin.rows[0].used === 'true') return jsonFormatter.error(res, 'Your session has been used or expired', 401, undefined, 'session expired')
-            const checkPinQuery = `UPDATE visitorTable SET used='true', new='false' WHERE email=$1 AND PassPhase=$2`;
+            const checkPinQuery = `UPDATE visitorTable SET used='true', new='false' WHERE email=$1 AND PassPhase=$2 RETURNING *`;
             const valueCheck  = [email, password]
-            const returnedData = await pool.query(checkPinQuery, valueCheck);
+            const returnedDataFromUpdate = await pool.query(checkPinQuery, valueCheck);
          jwt.sign({email, password} , process.env.EMAIL_AND_PASSWORD_KEY, {expiresIn : '600000'} , (err, token)=>{
             if(err){
                return log(error('Error from : src/auth/index.js - VisitorAuth'), errorMessage(err));
             }else{
                 return res.status(200).json({
                     description: 'visitor',
-                    email: returnedDataFromLogin.rows[0].email,
-                    gender: returnedDataFromLogin.rows[0].gender,
-                    username: returnedDataFromLogin.rows[0].username,
-                    token
+                    email: returnedDataFromUpdate.rows[0].email,
+                    gender: returnedDataFromUpdate.rows[0].gender,
+                    username: returnedDataFromUpdate.rows[0].username,
+                    token,
+                   id : returnedDataFromUpdate.rows[0].id
                 })
             }})
             }else { return jsonFormatter.error(res, 'Incorrect Username or Password', 401, undefined, 'incorrect username or password')}}
