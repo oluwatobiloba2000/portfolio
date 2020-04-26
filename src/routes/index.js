@@ -109,6 +109,11 @@ appRouter.get(`/api/resume`, resumeController.getResume)
 appRouter.put(`/api/resume/:id/edit`, checkToken, resumeController.updateResume)
 appRouter.delete(`/api/resume/:id/delete`, checkToken, resumeController.deleteResume)
 
+// -------------------- theme settings -------------------
+appRouter.get(`/api/admin/theme`, AdminThemeSettings.getAdminTheme)
+appRouter.post(`/api/admin/theme/add`, checkToken, AdminThemeSettings.addThemeSettingsAdmin)
+appRouter.put(`/api/admin/theme/update`, checkToken, AdminThemeSettings.updateAdminTheme)
+
 
 appRouter.get('*', (req, res)=>{
     jsonFormatter.error(res, 'Unknown Route', 404)
