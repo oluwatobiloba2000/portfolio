@@ -45,6 +45,21 @@ class Controller{
                 log(error('Error from : src/contollers/profileController.js - uploadPhoto'), errorMessage(err));
             }}})
         }
+        
+            //this is an open route
+    static async getUploadedPics (req, res){
+        const start = parseInt(req.query.start);
+        const count = parseInt(req.query.count);
+        try {
+            const query = `SELECT * from photoUploads ORDER BY TIMESTAMP OFFSET($1) LIMIT($2)`
+            const values = [start, count]
+            const photos = await pool.query(query, values);
+            if(!photos.rows.length) return jsonFormatter.success(res, 'empty');
+            return jsonFormatter.success(res, 'All pics', photos.rowCount, photos.rows, undefined, 'all');
+        }catch(err){
+            log(error('Error from : src/contollers/blogController.js - getUploadedPics'), errorMessage(err));
+        }
+    }
 
 }
     
