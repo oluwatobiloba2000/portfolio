@@ -81,16 +81,6 @@ class Controller{
 
     }
 }
-    
-    //    cloudinary.uploader.upload("sample.jpg", {"crop":"limit","tags":"samples","width":3000,"height":2000},
-        // function(result) { console.log(result) });
-// static async GetPhotoByTag (req, res){
-//     try {
-//   cloudinary.image("sample", {"crop":"fill","gravity":"faces","width":300,"height":200,"format":"jpg"});
-//     }catch(err){
-//         log(error('Error from : src/contollers/profileController.js - Getprofile'), errorMessage(err));
-//     }
-// }
     //CLOUDINARY RESPONSE IS EXACTLY LIKE THIS
     // {
 //     "status": "success",
