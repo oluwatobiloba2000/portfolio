@@ -309,6 +309,26 @@ const themeOptionsForAdmin = async () => {
     }
 }
 
+const photoUploads = async () => {
+    const queryPhotoUploads = ` CREATE TABLE IF NOT EXISTS
+    photoUploads(
+        imageId VARCHAR NOT NULL,
+        imageLink VARCHAR,
+        imageSize VARCHAR,
+        imageName VARCHAR,
+        timestamp VARCHAR,
+        imageTag VARCHAR,
+        imageFormat VARCHAR,
+        imageWidth VARCHAR,
+        imageHeight VARCHAR)`
+    try {
+        await pool.query(queryPhotoUploads);
+        log(`${chalk.keyword('orange')('photoUploads theme created')}`);
+    } catch (e) {
+        log(error(`Error From src/models/index.js - photoUploads`))
+        console.log(e)
+    }
+}
 
 
 const dropTable = async () => {
