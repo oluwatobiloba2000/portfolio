@@ -157,7 +157,7 @@ const userTable = async () => {
 const visitorTable = async () => {
     const queryVisitorTable = ` CREATE TABLE IF NOT EXISTS
     visitorTable(
-                id VARCHAR NOT NULL,
+                id VARCHAR NOT NULL UNIQUE,
                 avatar VARCHAR,
                 gender VARCHAR,
                 email VARCHAR NOT NULL,
@@ -270,9 +270,30 @@ const resumeTable = async () => {
     }
 }
 
+const themeOptionsForVisitor = async () => {
+    const queryThemeOptionsForVisitor = ` CREATE TABLE IF NOT EXISTS
+    VisitorThemeTable(
+        userId VARCHAR NOT NULL,
+        themeId VARCHAR NOT NULL,
+        themeName VARCHAR DEFAULT 'Default',
+        primaryColor VARCHAR DEFAULT '#1890ff',
+        sideNavState VARCHAR DEFAULT 'fixed-side-nav',
+        topNavState VARCHAR DEFAULT 'fixed-nav-top',
+        fontSize VARCHAR DEFAULT '14px',
+        FOREIGN KEY(userId) REFERENCES visitorTable(id) ON DELETE CASCADE ON UPDATE CASCADE)`
+    try {
+        await pool.query(queryThemeOptionsForVisitor);
+        log(`${chalk.keyword('orange')('visitor theme created')}`);
+    } catch (e) {
+        log(error(`Error From src/models/index.js from here !! - themeOptionsForVisitor`))
+        console.log(e)
+    }
+}
+
+
 const dropTable = async () => {
     try {
-        const query = `DROP TABLE IF EXISTS resume`;
+        const query = `DROP TABLE IF EXISTS photoUploads`;
         await pool.query(query);
         log(`${chalk.keyword('red')(`table dropped`)}`);
       } catch (e) {
@@ -292,6 +313,9 @@ blogViewsTable()
 adminMessageTable()
 pinBoardTable()
 resumeTable()
+themeOptionsForAdmin()
+themeOptionsForVisitor()
+photoUploads()
 // dropTable()
 
 
