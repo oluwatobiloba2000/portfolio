@@ -99,6 +99,11 @@ appRouter.post(`/api/message/draft`, adminMessagingController.draftMessage)
 appRouter.post(`/api/admin/message/filter`, checkToken, adminMessagingController.FilterAdminMessages)
 appRouter.post(`/api/message/admin/send`, checkToken, adminMessagingController.sendMessageAdmin)
 
+appRouter.post(`/api/pinboard/add`, checkToken, pinBoardController.addPinBoard)
+appRouter.get(`/api/pinboard`, checkToken, pinBoardController.getPinboards)
+appRouter.put(`/api/pinboard/:id/update`, checkToken, pinBoardController.updatePinBoard)
+appRouter.delete(`/api/pinboard/:id/delete`, checkToken, pinBoardController.deleteProject)
+
 
 appRouter.get('*', (req, res)=>{
     jsonFormatter.error(res, 'Unknown Route', 404)
