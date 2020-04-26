@@ -54,6 +54,33 @@ class Controller{
         }
     }
 
+    static async updateVisitorTheme(req, res){
+        jwt.verify(req.token, process.env.EMAIL_AND_PASSWORD_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.status(403).json(err)
+            }else{
+                const userId = req.query.userID;
+                const themeId = req.query.themeID;
+                  try{
+                      const query = `SELECT * FROM VisitorThemeTable WHERE userId=$1 AND themeId=$2`
+                      const value = [userId, themeId];
+                      const formerTheme = await pool.query(query, value);
+                      if(!formerTheme.rows.length) return jsonFormatter.error(res, 'Theme not found', 404, undefined, 'not found')
+                      const formerThemeToUpdate = formerTheme.rows[0];
+                      const themename = req.body.themename || formerThemeToUpdate.themename;
+                      const primarycolor = req.body.primarycolor  ||  formerThemeToUpdate.primarycolor;
+                      const sidenavstate = req.body.sidenavstate || formerThemeToUpdate.sideNnavstate;
+                      const topnavstate = req.body.topnavstate || formerThemeToUpdate.topnavstate;
+                      const fontsize = req.body.fontsize || formerThemeToUpdate.fontsize;
+                      const updatequery = `UPDATE AdminThemeTable SET themeName=$1, primaryColor=$2, sideNavState=$3, topNavState=$4, fontSize=$5 RETURNING *`
+                      const updateValues = [themename, primarycolor, sidenavstate, topnavstate, fontsize];
+                      const newTheme = await pool.query(updatequery, updateValues);
+                      return jsonFormatter.success(res, 'Theme updated', newTheme.rowCount, newTheme.rows, undefined, 'updated');
+                  }catch(e){
+                    log(error('Error from : src/contollers/adminThemeSettings.js - updateAdminTheme'), errorMessage(e));
+                  }
+              }})
+    }
 }
 
 export default Controller;
