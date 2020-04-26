@@ -9,6 +9,7 @@ import cors from "cors";
 
 import chalk from 'chalk';
 
+import expressFileUpload from 'express-fileupload';
 // import routes
 import appRouter from "./routes";
 
@@ -20,13 +21,17 @@ app.use(bodyParser.json({
     extended: true
 }))
 
+app.use(expressFileUpload({
+    useTempFiles : true
+}))
+
 app.use(appRouter);
 const log = console.log;
 const error = chalk.bold.red.inverse.bgWhite;
 const errorMessage = chalk.white.bgGrey;
 const success = chalk.bold.black.bgGreen;
 const successMessage = chalk.green;
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, ()=>{
     log(success('From server.js'), successMessage(`You can now view the app in your browser ${chalk.keyword('white')(`http://localhost:${PORT}`)}`))
