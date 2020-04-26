@@ -104,6 +104,11 @@ appRouter.get(`/api/pinboard`, checkToken, pinBoardController.getPinboards)
 appRouter.put(`/api/pinboard/:id/update`, checkToken, pinBoardController.updatePinBoard)
 appRouter.delete(`/api/pinboard/:id/delete`, checkToken, pinBoardController.deleteProject)
 
+appRouter.post(`/api/resume/add`, checkToken, resumeController.addResume)
+appRouter.get(`/api/resume`, resumeController.getResume)
+appRouter.put(`/api/resume/:id/edit`, checkToken, resumeController.updateResume)
+appRouter.delete(`/api/resume/:id/delete`, checkToken, resumeController.deleteResume)
+
 
 appRouter.get('*', (req, res)=>{
     jsonFormatter.error(res, 'Unknown Route', 404)
