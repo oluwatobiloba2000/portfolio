@@ -39,6 +39,20 @@ class Controller{
                   }
               }})
     }
+    //this is an open route
+    static async getVisitorTheme (req, res){
+        const userId = req.query.userID;
+        try {
+            if(!userId)  return jsonFormatter.error(res, 'query required !', 400, undefined, 'fields required');
+            const query = `SELECT * from VisitorThemeTable WHERE userId=$1`;
+            const value = [userId]
+            const userTheme = await pool.query(query, value);
+            if(!userTheme.rows.length) return jsonFormatter.success(res, 'empty');
+            return jsonFormatter.success(res, 'visitor Theme', userTheme.rowCount, userTheme.rows, undefined, 'all');
+        }catch(err){
+            log(error('Error from : src/contollers/adminThemeController.js - getVisitorTheme'), errorMessage(err));
+        }
+    }
 
 }
 
