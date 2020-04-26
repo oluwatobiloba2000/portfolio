@@ -118,7 +118,9 @@ appRouter.get(`/api/visitor/theme`,  VisitorThemeSettings.getVisitorTheme)
 appRouter.post(`/api/visitor/theme/add`, checkToken, VisitorThemeSettings.addThemeSettingsVisitor)
 appRouter.put(`/api/visitor/theme/update`, checkToken, VisitorThemeSettings.updateVisitorTheme)
 
-
+appRouter.post(`/api/upload`, checkToken, photoUpload.upLoadphoto);
+appRouter.get(`/api/photos`, checkToken, photoUpload.getUploadedPics);
+appRouter.delete(`/api/photo/delete`, checkToken, photoUpload.deleteUploadedPics);
 appRouter.get('*', (req, res)=>{
     jsonFormatter.error(res, 'Unknown Route', 404)
 })
