@@ -61,6 +61,25 @@ class Controller{
         }
     }
 
+    static async deleteUploadedPics (req, res){
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            if(err){
+                return res.status(403).json(err)
+              }else{
+                  const id = req.params.id;
+
+                  try{
+                      const query = `DELETE FROM photoUploads WHERE imageId=$1`
+                      const value = [id];
+                      const picsToDelete = await pool.query(query, value);
+                      if(!picsToDelete.rowCount) return jsonFormatter.error(res, 'pics not found', 404, undefined, 'not found')
+                      return jsonFormatter.success(res, 'pics deleted', undefined, undefined, 'deleted');
+                  }catch(e){
+                    log(error('Error from : src/contollers/uploadPhoto.js - deleteUploadedPics'), errorMessage(e));
+                  }
+              }})
+
+    }
 }
     
     //    cloudinary.uploader.upload("sample.jpg", {"crop":"limit","tags":"samples","width":3000,"height":2000},
