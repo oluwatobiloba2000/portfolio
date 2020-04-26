@@ -114,6 +114,10 @@ appRouter.get(`/api/admin/theme`, AdminThemeSettings.getAdminTheme)
 appRouter.post(`/api/admin/theme/add`, checkToken, AdminThemeSettings.addThemeSettingsAdmin)
 appRouter.put(`/api/admin/theme/update`, checkToken, AdminThemeSettings.updateAdminTheme)
 
+appRouter.get(`/api/visitor/theme`,  VisitorThemeSettings.getVisitorTheme)
+appRouter.post(`/api/visitor/theme/add`, checkToken, VisitorThemeSettings.addThemeSettingsVisitor)
+appRouter.put(`/api/visitor/theme/update`, checkToken, VisitorThemeSettings.updateVisitorTheme)
+
 
 appRouter.get('*', (req, res)=>{
     jsonFormatter.error(res, 'Unknown Route', 404)
