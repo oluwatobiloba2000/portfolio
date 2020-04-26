@@ -9,13 +9,25 @@ import lastLogoutController from '../controllers/LastLogoutSession';
 import {Authentication}from '../auth/index';
 import {checkToken} from '../auth/index';
 import ActivityController from '../controllers/activityController';
-import LoginDetailsController from '../controllers/addLoginDetails';
+import LoginDetailsController from '../controllers/addAdminDetails';
 import VisitorController from '../controllers/VisitorController';
+import BlogViewController from '../controllers/blogViewsController';
+import adminMessagingController from '../controllers/adminMessage';
+import pinBoardController from '../controllers/pinBoardController';
+import resumeController from '../controllers/resumeController';
+import AdminThemeSettings from '../controllers/adminThemeSettings';
+import VisitorThemeSettings from '../controllers/visitorThemeSettings';
+import ping from '../controllers/pingNotify';
+import photoUpload from '../controllers/uploadPhoto';
+
 const appRouter = router();
 
 appRouter.get('/', (req, res)=>{
     return jsonFormatter.success(res, 'success', 200, 'none' ,'my portfolio site API made with Node and express by Anani oluwatobiloba');
 })
+
+//this route is designed to test if your app is connected to the internet by sending a request every 3s
+appRouter.get('/api/ping', ping.GetServerStatus)
 
 appRouter.post('/api/login', Authentication.logInAuthUser);
 appRouter.post('/api/pin', Authentication.PinAuth)
@@ -24,6 +36,7 @@ appRouter.post('/api/login/add', checkToken, LoginDetailsController.addLoginDeta
 appRouter.put('/api/login/update', checkToken, LoginDetailsController.updateLoginDetails)
 
 appRouter.post('/api/login/visitor', Authentication.VisitorAuth);
+appRouter.put('/api/visitor/update', checkToken, VisitorController.updateVisitorName);
 appRouter.post('/api/visitor/add', checkToken, VisitorController.addVisitor)
 appRouter.get('/api/visitor', checkToken, VisitorController.GetAllVisitor)
 appRouter.post('/api/visitor/:id/:email/passphase/regenerate', checkToken, VisitorController.RegeneratePassPhase)
@@ -54,10 +67,15 @@ appRouter.delete('/api/project/:id/delete', checkToken, projectController.delete
 
 // blog routes
 appRouter.get(`/api/blog`, blogController.GetBlog)
+//get blog byt id
+appRouter.post(`api/blog/:blogId`, blogController.GetABlog);
 //// spacial admin key needed
 appRouter.post(`/api/blog/post`, checkToken, blogController.addBlog)
-appRouter.delete(`/api/blog/:id/delete`)
+appRouter.delete(`/api/blog/:id/delete`, checkToken, blogController.deleteBlog)
 appRouter.put(`/api/blog/:id/update`, checkToken, blogController.updateBlog)
+
+appRouter.post(`/api/blog/:blogId/view/add`, BlogViewController.addBlogView);
+appRouter.get(`/api/blog/:blogId/getviews`, BlogViewController.GetViews)
 
 //message route
 appRouter.post(`/api/message/send`, contactMe.sendMessage)
@@ -74,6 +92,13 @@ appRouter.put('/api/message/:id/unread', checkToken, contactMe.unreadMessage)
 appRouter.post(`/api/activity/add`, ActivityController.addAnActivity)
 appRouter.get(`/api/activity/feed`, checkToken, ActivityController.Getactivities)
 appRouter.put(`/api/activity/:id/read`, checkToken, ActivityController.readActvity)
+ 
+//Admin messaging route
+// to save a message as draft
+appRouter.post(`/api/message/draft`, adminMessagingController.draftMessage)
+appRouter.post(`/api/admin/message/filter`, checkToken, adminMessagingController.FilterAdminMessages)
+appRouter.post(`/api/message/admin/send`, checkToken, adminMessagingController.sendMessageAdmin)
+
 
 appRouter.get('*', (req, res)=>{
     jsonFormatter.error(res, 'Unknown Route', 404)
