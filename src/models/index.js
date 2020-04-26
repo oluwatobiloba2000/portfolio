@@ -290,6 +290,26 @@ const themeOptionsForVisitor = async () => {
     }
 }
 
+const themeOptionsForAdmin = async () => {
+    const queryThemeOptionsForAdmin = ` CREATE TABLE IF NOT EXISTS
+    AdminThemeTable(
+        userId VARCHAR NOT NULL,
+        themeId VARCHAR,
+        themeName VARCHAR DEFAULT 'Default',
+        primaryColor VARCHAR DEFAULT '#1890ff',
+        sideNavState VARCHAR DEFAULT 'fixed-side-nav',
+        topNavState VARCHAR DEFAULT 'fixed-nav-top',
+        fontSize VARCHAR DEFAULT '14px')`
+    try {
+        await pool.query(queryThemeOptionsForAdmin);
+        log(`${chalk.keyword('orange')('admin theme created')}`);
+    } catch (e) {
+        log(error(`Error From src/models/index.js - themeOptionsForAdmin`))
+        console.log(e)
+    }
+}
+
+
 
 const dropTable = async () => {
     try {
