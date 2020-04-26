@@ -19,13 +19,14 @@ const jsonFormatter = {
             action
         })
     },
-    tokenFormat(res, description, token, email){
+    tokenFormat(res, description, token, email, userId){
         res.status(200);
         res.json({
             status : "success",
             description,
             token,
-            email
+            email,
+            userId
         })
     }
 }
