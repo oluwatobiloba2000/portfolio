@@ -67,15 +67,16 @@ appRouter.delete('/api/project/:id/delete', checkToken, projectController.delete
 
 // blog routes
 appRouter.get(`/api/blog`, blogController.GetBlog)
-//get blog byt id
-appRouter.post(`api/blog/:blogId`, blogController.GetABlog);
+//get blog by id
+appRouter.post(`/api/blog/:blogId`, blogController.getABlog);
 //// spacial admin key needed
-appRouter.post(`/api/blog/post`, checkToken, blogController.addBlog)
+appRouter.post(`/api/blog/post/new`, checkToken, blogController.postAblog)
 appRouter.delete(`/api/blog/:id/delete`, checkToken, blogController.deleteBlog)
 appRouter.put(`/api/blog/:id/update`, checkToken, blogController.updateBlog)
 
 appRouter.post(`/api/blog/:blogId/view/add`, BlogViewController.addBlogView);
-appRouter.get(`/api/blog/:blogId/getviews`, BlogViewController.GetViews)
+appRouter.get(`/api/blog/views`, BlogViewController.GetViews)
+appRouter.get(`/api/blog/views/unique`, BlogViewController.GetUniqueViews)
 
 //message route
 appRouter.post(`/api/message/send`, contactMe.sendMessage)
