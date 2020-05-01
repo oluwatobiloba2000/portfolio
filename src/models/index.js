@@ -14,9 +14,9 @@ let connectionString;
 const environmentalVariableSwitch = process.env.NODE_ENV;
 
 if(!process.env.DEV_USER) {
-    log(error(`Error From src/models/index.js`), errorMessage(`Fill in your database details in your ${chalk.keyword('cyan')('.env')} file`))
+    // log(error(`Error From src/models/index.js`), errorMessage(`Fill in your database details in your ${chalk.keyword('cyan')('.env')} file`))
 }else if(!environmentalVariableSwitch){
-    log(error(`Error From src/models/index.js`), errorMessage(`${chalk.keyword('cyan')('NODE_ENV in .env')} file needs either 'test' or 'production' or 'development'`))
+    // log(error(`Error From src/models/index.js`), errorMessage(`${chalk.keyword('cyan')('NODE_ENV in .env')} file needs either 'test' or 'production' or 'development'`))
 }
 else if (environmentalVariableSwitch == 'test') {
     connectionString = config['test'];
@@ -44,7 +44,7 @@ const profileTable = async () => {
     id SERIAL PRIMARY KEY UNIQUE)`
     try {
         await pool.query(queryProfile);
-        log(`${chalk.keyword('orange')('profile table created')}`);
+        // log(`${chalk.keyword('orange')('profile table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - profileTable`))
         console.log(e)
@@ -61,7 +61,7 @@ const skillsTable = async () => {
             timestamp TIMESTAMP)`
     try {
         await pool.query(querySkills);
-        log(`${chalk.keyword('orange')('skills table created')}`);
+        // log(`${chalk.keyword('orange')('skills table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - skillsTable`))
          console.log(e)
@@ -82,7 +82,7 @@ const blogTable = async () => {
         timestamp TIMESTAMP )`
     try {
         await pool.query(queryBlog);
-        log(`${chalk.keyword('orange')('blog table created')}`);
+        // log(`${chalk.keyword('orange')('blog table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - blogTable`))
         console.log(e)
@@ -107,7 +107,7 @@ const projectTable = async () => {
             timestamp TIMESTAMP )`
             try {
         await pool.query(queryProject);
-        log(`${chalk.keyword('orange')('project table created')}`);
+        // log(`${chalk.keyword('orange')('project table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - projectTable`))
         console.log(e)
@@ -130,7 +130,7 @@ const contactMeTable = async () => {
                 timestamp TIMESTAMP )`
                 try {
                     await pool.query(queryContactMe);
-        log(`${chalk.keyword('orange')('contact me table created')}`);
+        // log(`${chalk.keyword('orange')('contact me table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - contactMeTable`))
         console.log(e)
@@ -147,7 +147,7 @@ const userTable = async () => {
                 specialPin VARCHAR NOT NULL)`
     try {
         await pool.query(queryUserTable);
-        log(`${chalk.keyword('orange')('user table created')}`);
+        // log(`${chalk.keyword('orange')('user table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - userTable`))
         console.log(e)
@@ -169,7 +169,7 @@ const visitorTable = async () => {
                 used VARCHAR DEFAULT 'false')`
     try {
         await pool.query(queryVisitorTable);
-        log(`${chalk.keyword('orange')('visitor table created')}`);
+        // log(`${chalk.keyword('orange')('visitor table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - visitorTable`))
         console.log(e)
@@ -187,7 +187,7 @@ const activityTable = async () => {
                 dateRecieved VARCHAR NOT NULL)`
     try {
         await pool.query(queryActivityTable);
-        log(`${chalk.keyword('orange')('activity table created')}`);
+        // log(`${chalk.keyword('orange')('activity table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - activityTable`))
         console.log(e)
@@ -200,10 +200,11 @@ const blogViewsTable = async () => {
                 id VARCHAR NOT NULL,
                 blogId VARCHAR NOT NULL,
                 ip VARCHAR NOT NULL,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(blogId) REFERENCES blog(id) ON DELETE CASCADE ON UPDATE CASCADE)`
     try {
         await pool.query(queryBlogViews);
-        log(`${chalk.keyword('orange')('blogViews table created')}`);
+        // log(`${chalk.keyword('orange')('blogViews table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - blogViewsTable`))
         console.log(e)
@@ -225,7 +226,7 @@ const adminMessageTable = async () => {
         timestamp TIMESTAMP)`
     try {
         await pool.query(queryBlogViews);
-        log(`${chalk.keyword('orange')('adminMessage table created')}`);
+        // log(`${chalk.keyword('orange')('adminMessage table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - adminMessageTable`))
         console.log(e)
@@ -242,7 +243,7 @@ const pinBoardTable = async () => {
         timestamp TIMESTAMP)`
     try {
         await pool.query(queryPinBoard);
-        log(`${chalk.keyword('orange')('pin Board table created')}`);
+        // log(`${chalk.keyword('orange')('pin Board table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - pinBoardTable`))
         console.log(e)
@@ -263,7 +264,7 @@ const resumeTable = async () => {
         body VARCHAR NOT NULL)`
     try {
         await pool.query(queryResumeTable);
-        log(`${chalk.keyword('orange')('resume table created')}`);
+        // log(`${chalk.keyword('orange')('resume table created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - resumeTable`))
         console.log(e)
@@ -283,7 +284,7 @@ const themeOptionsForVisitor = async () => {
         FOREIGN KEY(userId) REFERENCES visitorTable(id) ON DELETE CASCADE ON UPDATE CASCADE)`
     try {
         await pool.query(queryThemeOptionsForVisitor);
-        log(`${chalk.keyword('orange')('visitor theme created')}`);
+        // log(`${chalk.keyword('orange')('visitor theme created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js from here !! - themeOptionsForVisitor`))
         console.log(e)
@@ -302,7 +303,7 @@ const themeOptionsForAdmin = async () => {
         fontSize VARCHAR DEFAULT '14px')`
     try {
         await pool.query(queryThemeOptionsForAdmin);
-        log(`${chalk.keyword('orange')('admin theme created')}`);
+        // log(`${chalk.keyword('orange')('admin theme created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - themeOptionsForAdmin`))
         console.log(e)
@@ -323,7 +324,7 @@ const photoUploads = async () => {
         imageHeight VARCHAR)`
     try {
         await pool.query(queryPhotoUploads);
-        log(`${chalk.keyword('orange')('photoUploads theme created')}`);
+        // log(`${chalk.keyword('orange')('photoUploads theme created')}`);
     } catch (e) {
         log(error(`Error From src/models/index.js - photoUploads`))
         console.log(e)
@@ -333,9 +334,9 @@ const photoUploads = async () => {
 
 const dropTable = async () => {
     try {
-        const query = `DROP TABLE IF EXISTS photoUploads`;
+        const query = `DROP TABLE IF EXISTS blogviews`;
         await pool.query(query);
-        log(`${chalk.keyword('red')(`table dropped`)}`);
+        // log(`${chalk.keyword('red')(`table dropped`)}`);
       } catch (e) {
           pool.end();
         }
