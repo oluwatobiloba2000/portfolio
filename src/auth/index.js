@@ -26,7 +26,7 @@ class Authentication{
       if(!returnedData.rows[0]) return jsonFormatter.error(res, 'admin email or password does not exist', 401, returnedData, 'not exist')
        const match = await bcrypt.compare(password, returnedData.rows[0].password);
       if(match) {
-        jwt.sign({email, password} , process.env.EMAIL_AND_PASSWORD_KEY, {expiresIn : '2h'} , (err, token)=>{
+        jwt.sign({email, password} , process.env.EMAIL_AND_PASSWORD_KEY, {expiresIn : '3d'} , (err, token)=>{
         if(err){
             return log(error('Error from : src/auth/index.js - logInAuthUser'), errorMessage(err));
         }else{
@@ -52,7 +52,7 @@ class Authentication{
         if(!returnedData.rows[0]) return jsonFormatter.error(res, 'could not get user', 404, undefined, 'not found')
         const match = await bcrypt.compare(pin,  returnedData.rows[0].specialpin);
         if(match) {
-         jwt.sign({pin} , process.env.SPECIAL_PIN_KEY, {expiresIn : '1h'} , (err, token)=>{
+         jwt.sign({pin} , process.env.SPECIAL_PIN_KEY, {expiresIn : '3d'} , (err, token)=>{
             if(err){
                return log(error('Error from : src/auth/index.js - logInAuthUser'), errorMessage(err));
             }else{
@@ -82,7 +82,7 @@ class Authentication{
             const checkPinQuery = `UPDATE visitorTable SET used='true', new='false' WHERE email=$1 AND PassPhase=$2 RETURNING *`;
             const valueCheck  = [email, password]
             const returnedDataFromUpdate = await pool.query(checkPinQuery, valueCheck);
-         jwt.sign({email, password} , process.env.EMAIL_AND_PASSWORD_KEY, {expiresIn : '600000'} , (err, token)=>{
+         jwt.sign({email, password} , process.env.EMAIL_AND_PASSWORD_KEY, {expiresIn : '1d'} , (err, token)=>{
             if(err){
                return log(error('Error from : src/auth/index.js - VisitorAuth'), errorMessage(err));
             }else{
@@ -101,8 +101,6 @@ class Authentication{
         }}
     }
 
-
-
 // checking if header is not undefined, if request is undefined return (403) bad request
 const checkToken = (req, res, next) =>{
     const header = req.headers['authorization'];
@@ -118,6 +116,7 @@ const checkToken = (req, res, next) =>{
         res.sendStatus(403)
     }
 }
+
 export {
     Authentication,
      checkToken
