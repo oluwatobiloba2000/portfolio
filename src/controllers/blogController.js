@@ -14,7 +14,7 @@ const successMessage = chalk.green;
 
 class Controller{
     // you need a special pin to unlock this
-    static async addBlog (req, res){
+    static async postAblog (req, res){
         jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
             if(err){
                 return res.status(403).json(err)
@@ -55,14 +55,22 @@ class Controller{
     }
 
         //this is an open route and it gets a single blog
-        static async GetABlog (req, res){
+        static async getABlog (req, res){
             const BlogID = req.params.blogId;
             try {
                 const query = `SELECT * from blog WHERE id=$1`
                 const value = [BlogID]
                 const blog = await pool.query(query, value);
                 if(!blog.rows.length) return jsonFormatter.error(res, 'no blog associated with this ID', 404, undefined, 'not found');
-                return jsonFormatter.success(res, 'blog', blog.rowCount, blog.rows, undefined, 'all');
+                const queryView = `SELECT COUNT(*) from blogViews WHERE blogId=$1`
+                const viewValue = [BlogID]
+                const blogViews = await pool.query(queryView, viewValue);
+                return res.status(200).json({
+                    description: "Blog",
+                    blogViews: blogViews == 0 ? 'no view' : blogViews.rows[0],
+                    blog : blog.rows[0],
+                    action: "all"
+                })
             }catch(err){
                 log(error('Error from : src/contollers/blogController.js - GetABlog'), errorMessage(err));
             }
