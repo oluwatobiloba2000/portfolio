@@ -38,17 +38,19 @@ class Controller {
     }
 
     static async GetMessage(req, res) {
-        const start = parseInt(req.query.start);
-        const count = parseInt(req.query.count);
-        try {
-            const query = `SELECT * from contactMe WHERE trash = 'false' ORDER BY TIMESTAMP OFFSET($1) LIMIT($2)`
-            const values = [start, count]
-            const messages = await pool.query(query, values);
-            if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
-            return jsonFormatter.success(res, 'All messages', messages.rowCount, messages.rows, undefined, 'all');
-        } catch (err) {
-            log(error('Error from : src/contollers/contactMe.js - Getmessage'), errorMessage(err));
-        }
+        jwt.verify(req.token, process.env.SPECIAL_PIN_KEY, async (err, authorizedData)=>{
+            const start = parseInt(req.query.start);
+            const count = parseInt(req.query.count);
+            try {
+                const query = `SELECT * from contactMe WHERE trash = 'false' ORDER BY TIMESTAMP OFFSET($1) LIMIT($2)`
+                const values = [start, count]
+                const messages = await pool.query(query, values);
+                if (!messages.rows.length) return jsonFormatter.success(res, 'empty');
+                return jsonFormatter.success(res, 'All messages', messages.rowCount, messages.rows, undefined, 'all');
+            } catch (err) {
+                log(error('Error from : src/contollers/contactMe.js - Getmessage'), errorMessage(err));
+            }
+        })
     }
     //To view read and unread messages, 
     //fill the body with the word
