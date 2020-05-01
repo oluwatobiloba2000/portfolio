@@ -1,10 +1,8 @@
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+
 import jsonFormatter from '../helpers/jsonFormat';
 import pool from '../models/index';
 import {uuid} from 'uuidv4';
 import chalk from 'chalk';
-dotenv.config();
 
 const log = console.log;
 const error = chalk.bold.red.inverse.bgWhite;
@@ -22,10 +20,12 @@ class Controller{
             return jsonFormatter.error(res, 'All fields are required !', 400, undefined, 'invalid');
         }
         try {
-            const query = `SELECT * from blogviews WHERE blogId=$1 AND ip=$2`;
-            const blogIdValue = [blogId, ip]
+            const query = `SELECT created_at from blogviews WHERE ip=$1 AND created_at > NOW() - INTERVAL '10 minutes'`;
+            const blogIdValue = [ip]
             const IPview = await pool.query(query, blogIdValue);
-            if(IPview.rows.length) return jsonFormatter.success(res, 'IP already exist for post', undefined, undefined, undefined, 'invalid');
+            
+            if(IPview.rows.length) return jsonFormatter.success(res, 'IP not added yet because it is not 10 mins', undefined, IPview.rows, undefined, 'invalid');
+            
             const queryAddIP = `INSERT INTO blogviews(id, blogId, ip) VALUES($1, $2, $3) RETURNING *`
             const value = [id, blogId, ip]
             const newAddedIP = await pool.query(queryAddIP, value);
@@ -36,17 +36,26 @@ class Controller{
     }
 
     static async GetViews (req, res){
-        const blogId = req.params.blogId;
             try {
-                      const query = `SELECT COUNT(*) from blogViews WHERE blogId=$1`
-                      const value = [blogId]
-                      const blogViews = await pool.query(query, value);
+                      const query = `SELECT COUNT(*) from blogViews`
+                      const blogViews = await pool.query(query);
                       if(blogViews.rows[0].count <= 0) return jsonFormatter.success(res, 'no view', blogViews.rows[0].count);
-                      return jsonFormatter.success(res, 'Blog views', blogViews.rows[0].count, undefined,undefined, 'all');
+                      return jsonFormatter.success(res, 'All Blog views', blogViews.rows[0].count, undefined,undefined, 'all');
                   }catch(err){
                       return log(error('Error from : src/controllers/blogViewsController.js - GetViews'), errorMessage(err));
                   }
     }
+
+    static async GetUniqueViews (req, res){
+        try {
+                  const query = `SELECT DISTINCT ip from blogViews`
+                  const blogViews = await pool.query(query);
+                  if(blogViews.rows[0].count <= 0) return jsonFormatter.success(res, 'no view', blogViews.rows[0].count);
+                  return jsonFormatter.success(res, 'All unique Blog views', blogViews.rowCount, undefined,undefined, 'all');
+              }catch(err){
+                  return log(error('Error from : src/controllers/blogViewsController.js - GetViews'), errorMessage(err));
+              }
+}
 }
 
 export default Controller;
