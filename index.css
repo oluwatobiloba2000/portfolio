@@ -329,7 +329,7 @@ html, body{
        top:  -35px;
     }
     .tb-hero-title{
-        font-size: 47px;
+        font-size: 40px;
     }
 
     .tb-navbar{
@@ -356,6 +356,10 @@ html, body{
         position: relative;
     top: -40px;
     right: 0;
+    }
+
+    .section-3{
+        padding: 0 !important;
     }
 }
 
@@ -406,7 +410,15 @@ html, body{
         height: 250px;
     }
 
-    .about-me-container-text{   
+    .about-me-container-text{
         padding: 0;
     }
+
+}
+
+@media screen and (max-width: 570px){
+    .card{
+      margin: 10px 0px;
+    }
+
 }
