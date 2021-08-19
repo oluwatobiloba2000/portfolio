@@ -55,7 +55,7 @@ html, body{
 } */
 
 .hero-section {
-    padding: 300px 0 200px;
+    padding: 300px 0 235px;
     position: relative;
     background-color: var(--bg-primary);
   }
@@ -236,10 +236,13 @@ html, body{
 }
 
 .about-me-container-text{
-    height: 175px;
-    margin-bottom: 0;
-    font-style: italic;
-    color: #41228e;
+    margin-bottom: 0px;
+    height: 210px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin-top: 5px;
+    font-size: 15px;
 }
 
 .section-3-attachment-1{
@@ -290,17 +293,70 @@ html, body{
 .double-card-flex-column{
     display: flex;
     flex-direction: column;
+    margin: 10px;
 }
 
-@media screen and (max-width: 1111px){
+.double-card{
+    margin: 0 !important;
+}
+
+.contact-section{
+    padding: 70px 30px;
+    background-image: url(./img/illustration/bg-dots.png);
+}
+
+.contact-section>p{
+    text-align: center;
+}
+
+.contact-header-text{
+    font-size: var(--h2-font);
+    text-align: center;
+}
+
+.about-section{
+    position: relative;
+    border-left: 78px solid #41228e;
+}
+
+#about-me{
+    margin-top: -175px;
+    position: absolute;
+}
+
+.contact-social-media{
+    height: 95px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 50px;
+}
+
+.contact-social-media>div{
+    width: 180px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@media screen and (max-width: 1115px){
     .hero-dot-group-attachment{
         top: 160px;
+    }
+
+    .about-me-container-text{
+        font-size: 13px;
     }
 }
 
 @media screen and (max-width: 992px){
     #tb-navbar{
         padding: 10px;
+    }
+
+    .about-section{
+        border-left: 0px;
     }
 
     .nav-link{
@@ -347,7 +403,6 @@ html, body{
     margin: 20px;
     text-align: center;
     height: auto;
-    margin-bottom: 0;
     padding: 30px;
     margin-top: -30px;
     }
@@ -360,6 +415,11 @@ html, body{
 
     .section-3{
         padding: 0 !important;
+    }
+
+    .about-me-container-text{
+        font-size: 15px;
+        height: auto;
     }
 }
 
@@ -414,6 +474,8 @@ html, body{
         padding: 0;
     }
 
+ 
+
 }
 
 @media screen and (max-width: 570px){
@@ -422,3 +484,40 @@ html, body{
     }
 
 }
+
+
+/* .slime {
+    background: linear-gradient(76deg, #fde1ff, #e0e7ff, #e0f9ff, #fffae9, #e8eaff, #ffe3f7, #daf1ff, #fde1ff, #e0e7ff, #e0f9ff, #fffae9, #e8eaff, #ffe3f7, #daf1ff, #fde1ff, #e0e7ff, #e0f9ff, #fffae9, #e8eaff, #ffe3f7, #daf1ff);
+    background-size: 500% 500%;
+    -webkit-animation: slime 45s ease infinite;
+    animation: slime 45s ease infinite;
+  }
+   */
+
+   /* @-webkit-keyframes slime {
+    0% {
+      background-position: 0% 50%;
+    }
+  
+    50% {
+      background-position: 100% 50%;
+    }
+  
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  @keyframes slime {
+    0% {
+      background-position: 0% 50%;
+    }
+  
+    50% {
+      background-position: 100% 50%;
+    }
+  
+    100% {
+      background-position: 0% 50%;
+    }
+  } */
