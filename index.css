@@ -340,6 +340,31 @@ html, body{
     align-items: center;
 }
 
+.nav-link::before {  
+    transform: scaleX(0);
+    transform-origin: bottom right;
+  }
+  
+  .nav-link:hover::before {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+  
+  .nav-link::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    inset: 0 0 0 0;
+    background: #953390;
+    z-index: -1;
+    transition: transform .3s ease;
+  }
+  
+  .nav-link {
+    position: relative;
+  }
+
 @media screen and (max-width: 1115px){
     .hero-dot-group-attachment{
         top: 160px;
